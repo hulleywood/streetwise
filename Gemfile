@@ -6,6 +6,10 @@ gem 'turbolinks'
 gem 'jbuilder', '~> 2.0'
 gem 'jquery-rails'
 
+gem "therubyracer"
+gem "less-rails"
+gem "twitter-bootstrap-rails"
+
 group :development, :test do
   gem 'rspec-rails'
   gem 'jasmine'
