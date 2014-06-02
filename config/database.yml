@@ -1,0 +1,16 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
+
+development:
+  <<: *default
+  database: streetwise_development
+
+test:
+  <<: *default
+  database: streetwise_test
+
+production:
+  <<: *default
+  database: streetwise_production
