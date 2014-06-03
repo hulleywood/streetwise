@@ -6,9 +6,13 @@ gem 'turbolinks'
 gem 'jbuilder', '~> 2.0'
 gem 'jquery-rails'
 
-gem "therubyracer"
-gem "less-rails"
-gem "twitter-bootstrap-rails"
+gem 'therubyracer'
+gem 'less-rails'
+gem 'twitter-bootstrap-rails'
+
+gem 'httparty'
+gem 'dotenv-rails', :groups => [:development, :test]
+gem 'soda-ruby', :require => 'soda'
 
 group :development, :test do
   gem 'rspec-rails'
