@@ -13,6 +13,6 @@ SearchController.prototype = {
         directionsController = new DirectionsController(mapView, mapModel);
 
     directionsController.generateEndpointLatLong();
-    directionsController.generateDirections();
+    directionsController.generatePossibleDirections();
   }
 }

@@ -7,23 +7,15 @@ var WaypointGenerator = function(startPosition, endPosition){
 WaypointGenerator.prototype = {
   start: function() {
     this.midpoint = this.calcLatLongMidpoint();
-    console.log(this.startPosition)
-    console.log(this.endPosition)
-    console.log(this.midpoint)
-
     this.radius = this.calculateRadius();
-    console.log(this.radius)
-
     this.southPoint = this.calculateSouthPoint();
-    console.log(this.southPoint)
-
     this.eastPoint = this.calculateEastPoint();
-    console.log(this.eastPoint)
 
     this.addVerticalWaypoints();
     this.addHorizontalWaypoints();
-    console.log(this.wayPoints);
-    this.printFormattedWaypoints();
+    // this.printFormattedWaypoints();
+    // console.log(this.wayPoints);
+    return this.wayPoints
   },
   calcLatLongMidpoint: function() {
     var midpointK = (this.endPosition.k - this.startPosition.k) / 2 + this.startPosition.k
