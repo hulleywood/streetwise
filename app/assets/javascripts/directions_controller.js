@@ -6,6 +6,8 @@ var DirectionsController = function(view, model){
   this.fakeEnd = {k: 37.7846334, A: -122.39741370000002}
   this.directionsService = new google.maps.DirectionsService();
   this.possibleDirections = []
+  this.map
+  this.initialize()
 }
 
 DirectionsController.prototype = {
@@ -14,15 +16,18 @@ DirectionsController.prototype = {
   },
   generatePossibleDirections: function() {
     var generator = new WaypointGenerator(this.fakeStart, this.fakeEnd)
+    // var generator = new WaypointGenerator(this.model.startPosition, this.model.endPosition)
     this.possibleWaypoints = generator.start()
     for (var i = 0; i < this.possibleWaypoints.length; i++) {
       this.generateRoute(this.fakeStart, this.fakeEnd, this.possibleWaypoints[i]);
+      // this.generateRoute(this.model.startPosition, this.model.endPosition, this.possibleWaypoints[i]);
     }
   },
   generateRoute: function(startPoint, endPoint, waypoint) {
-    waypts = []
-    waypts.push({location: new google.maps.LatLng(waypoint.k, waypoint.A)})
-    
+    var waypts = []
+    waypts.push({location: new google.maps.LatLng(waypoint.k, waypoint.A),
+      stopover: false})
+
     var request = {
       origin: new google.maps.LatLng(startPoint.k, startPoint.A),
       destination: new google.maps.LatLng(endPoint.k, endPoint.A),
@@ -30,10 +35,21 @@ DirectionsController.prototype = {
       travelMode: google.maps.TravelMode.WALKING
     };
 
-    var response = this.directionsService.route(request, function(response, status) {
+    var directionsDisplay = new google.maps.DirectionsRenderer();
+    directionsDisplay.setMap(this.map);
+    this.directionsService.route(request, function(response, status) {
       if (status == google.maps.DirectionsStatus.OK) {
         this.possibleDirections.push(response)
+        directionsDisplay.setDirections(response);
       }
     }.bind(this));
+  },
+  initialize: function() {
+    var sanFran = new google.maps.LatLng(37.7833, -122.4167);
+    var mapOptions = {
+      zoom:7,
+      center: sanFran
+    }
+    this.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
   }
 }
