@@ -18,7 +18,7 @@ MapModel.prototype = {
     var geocoder = new google.maps.Geocoder();
     geocoder.geocode( { 'address': address}, function(results, status) {
       if (status == google.maps.GeocoderStatus.OK) {
-        console.log(results[0].geometry.location)
+        // console.log(results[0].geometry.location)
         if (endPoint === "start") {
           this.startPosition = results[0].geometry.location
         }

@@ -2,8 +2,8 @@ var DirectionsController = function(view, model){
   this.view = view
   this.model = model
   this.possibleWaypoints
-  this.fakeStart = {k: 37.794807, A: -122.41799409999999}
-  this.fakeEnd = {k: 37.7846334, A: -122.39741370000002}
+  // this.fakeStart = {k: 37.794807, A: -122.41799409999999}
+  // this.fakeEnd = {k: 37.7846334, A: -122.39741370000002}
   this.directionsService = new google.maps.DirectionsService();
   this.possibleDirections = []
   this.map
@@ -39,7 +39,8 @@ DirectionsController.prototype = {
     directionsDisplay.setMap(this.map);
     this.directionsService.route(request, function(response, status) {
       if (status == google.maps.DirectionsStatus.OK) {
-        this.possibleDirections.push(response)
+        this.possibleDirections.push(response);
+        // console.log(this.possibleDirections);
         directionsDisplay.setDirections(response);
       }
     }.bind(this));

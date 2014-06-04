@@ -100,6 +100,7 @@ GEM
     pg (0.17.1)
     phantomjs (1.9.7.1)
     polyglot (0.3.5)
+    polylines (0.1.1)
     rack (1.5.2)
     rack-test (0.6.2)
       rack (>= 1.0)
@@ -201,6 +202,7 @@ DEPENDENCIES
   jquery-rails
   less-rails
   pg
+  polylines
   rails (= 4.1.1)
   rspec-rails
   sass-rails
