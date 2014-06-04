@@ -11,7 +11,7 @@ gem 'less-rails'
 gem 'twitter-bootstrap-rails'
 
 gem 'httparty'
-gem 'dotenv-rails', :groups => [:development, :test]
+# gem 'dotenv-rails', :groups => [:development, :test]
 gem 'soda-ruby', :require => 'soda'
 gem 'polylines'
 
