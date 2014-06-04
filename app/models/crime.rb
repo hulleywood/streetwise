@@ -1,9 +1,23 @@
 class Crime < ActiveRecord::Base
   def self.get_near_crimes(midpoint, radius)
-    max_lat = midpoint[:k] + radius
-    min_lat = midpoint[:k] - radius
-    max_long = midpoint[:A] + radius
-    min_long = midpoint[:A] - radius
-    Crime.where(y: (min_lat.to_s)..(max_lat.to_s))
+    lat_range = Crime.get_lat_range(midpoint, radius)
+    lng_range = Crime.get_lng_range(midpoint, radius)
+    Crime.where(y: lat_range, x: lng_range)
+  end
+
+  def self.get_lat_range(midpoint, radius)
+    if midpoint[:lat] > 0
+      (midpoint[:lat] - radius).to_s..(midpoint[:lat] + radius).to_s
+    else
+      (midpoint[:lat] + radius).to_s..(midpoint[:lat] - radius).to_s
+    end
+  end
+
+  def self.get_lng_range(midpoint, radius)
+    if midpoint[:lng] > 0
+      (midpoint[:lng] - radius).to_s..(midpoint[:lng] + radius).to_s
+    else
+      (midpoint[:lng] + radius).to_s..(midpoint[:lng] - radius).to_s
+    end
   end
 end
