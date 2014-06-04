@@ -1,28 +1,7 @@
-== README
+== StreetWise
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+StreetWise is an app that provides walking directions that take your environment into account. StreetWise generates a number of possible routes from point A to point B and uses SFGov crime data from the last 3 months to rank and select the "safest" one.
 
-Things you may want to cover:
+StreetWise is currently limited to the SF Metro Area. iOS and Android apps coming soon.
 
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-
-
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
+StreetWise is live: http://streetwise.herokuapp.com
