@@ -39,9 +39,9 @@ DirectionsController.prototype = {
     directionsDisplay.setMap(this.map);
     this.directionsService.route(request, function(response, status) {
       if (status == google.maps.DirectionsStatus.OK) {
-        this.possibleDirections.push(response)
-        console.log(this.possibleDirections);
-        // directionsDisplay.setDirections(response);
+        this.possibleDirections.push(response);
+        // console.log(this.possibleDirections);
+        directionsDisplay.setDirections(response);
       }
     }.bind(this));
   },
