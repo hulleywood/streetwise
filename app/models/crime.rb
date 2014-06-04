@@ -20,4 +20,13 @@ class Crime < ActiveRecord::Base
       (midpoint[:lng] + radius).to_s..(midpoint[:lng] - radius).to_s
     end
   end
+
+  def self.create(params)
+
+  end
+
+  private
+  def crime_params
+    params.require(:crime).permit( :time, :category, :pddistrict, :address, :descript, :dayofweek, :resolution, :date, :y, :x, :incidntnum )
+  end
 end

@@ -23,13 +23,13 @@ namespace :latest_crimes do
       puts "#{prev_response_count} Crimes fetched from the last API call"
     end
 
-    puts "#{all_responses.length} Crimes added to the database"
+    puts "#{all_responses.length} Crimes about to be added to the database"
 
     all_responses.each do |crime|
       if !IGRNORED_CATEGORIES.include?(crime['category'])
         crime.delete('location')
         crime["date"] = Time.at(crime["date"])
-        Crime.create(crime)
+        Crime.create!(crime.to_hash)
       end
     end
   end
