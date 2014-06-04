@@ -14,7 +14,8 @@ class RouteSafetyChecker
 
   private
   def select_safest_route
-    ranked_reoutes = return_ranked_routes
+    ranked_routes = return_ranked_routes
+    return_safest_route(ranked_routes)
   end
 
   def return_ranked_routes
@@ -49,5 +50,9 @@ class RouteSafetyChecker
     squared_lat = (coords[0] - crime.y.to_f) ** 2
     squared_lng = (coords[1] - crime.x.to_f) ** 2
     Math.sqrt(squared_lat + squared_lng)
+  end
+
+  def return_safest_route(ranked_routes)
+    ranked_routes.sort_by! { |route| route[:avg_near_crimes] }.first[:route]
   end
 end
