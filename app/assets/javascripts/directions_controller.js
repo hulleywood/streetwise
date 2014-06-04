@@ -11,16 +11,16 @@ var DirectionsController = function(view, model){
 }
 
 DirectionsController.prototype = {
-  generateEndpointLatLong: function() {
-    this.model.convertEndpointsToLatLong();
+  generateEndpointLatLong: function(callbackObj, callbackFunc) {
+    this.model.convertEndpointsToLatLong(callbackObj, callbackFunc);
   },
   generatePossibleDirections: function() {
-    var generator = new WaypointGenerator(this.fakeStart, this.fakeEnd)
-    // var generator = new WaypointGenerator(this.model.startPosition, this.model.endPosition)
+    // var generator = new WaypointGenerator(this.fakeStart, this.fakeEnd)
+    var generator = new WaypointGenerator(this.model.startPosition, this.model.endPosition)
     this.possibleWaypoints = generator.start()
     for (var i = 0; i < this.possibleWaypoints.length; i++) {
-      this.generateRoute(this.fakeStart, this.fakeEnd, this.possibleWaypoints[i]);
-      // this.generateRoute(this.model.startPosition, this.model.endPosition, this.possibleWaypoints[i]);
+      // this.generateRoute(this.fakeStart, this.fakeEnd, this.possibleWaypoints[i]);
+      this.generateRoute(this.model.startPosition, this.model.endPosition, this.possibleWaypoints[i]);
     }
   },
   generateRoute: function(startPoint, endPoint, waypoint) {

@@ -18,6 +18,7 @@ WaypointGenerator.prototype = {
     return this.wayPoints
   },
   calcLatLongMidpoint: function() {
+    // debugger
     var midpointK = (this.endPosition.k - this.startPosition.k) / 2 + this.startPosition.k
     var midpointA = (this.endPosition.A - this.startPosition.A) / 2 + this.startPosition.A
     return { k: midpointK, A: midpointA}
