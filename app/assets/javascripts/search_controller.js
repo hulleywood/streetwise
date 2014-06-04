@@ -18,6 +18,7 @@ SearchController.prototype = {
   initiateDirectionSearch: function(e) {
     e.preventDefault();
     var form = $('form#directions')[0]
+    $(form).find('button').attr('disabled', 'disabled');
     var ajaxRequest = $.ajax({
       context: this,
       url: form.action,
@@ -29,7 +30,10 @@ SearchController.prototype = {
     ajaxRequest.fail(this.showErrorMessage)
   },
   showDirections: function(response) {
+    $('form#directions').find('button').removeAttr('disabled');
+
     console.log(response)
+
     var waypts = []
     var origin = response.routes[0].legs[0].start_address
     var destination = response.routes[0].legs[0].end_address
@@ -49,6 +53,8 @@ SearchController.prototype = {
     // this.directionsDisplay.setDirections(response);
   },
   showErrorMessage: function(response) {
+    $('form#directions').find('button').removeAttr('disabled');
+    
     console.log("something went wrong...")
   }
 }
