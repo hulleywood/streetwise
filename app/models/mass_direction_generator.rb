@@ -11,6 +11,6 @@ class MassDirectionGenerator
     @waypoints.each do |waypoint|
       possible_routes << @maps_client.get_route(@start_position, @end_position, waypoint)
     end
-    possible_routes
+    possible_routes.reject { |route| route["routes"] == [] }
   end
 end

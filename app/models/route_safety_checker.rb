@@ -30,6 +30,7 @@ class RouteSafetyChecker
 
   def avg_near_crimes(route)
     @crimes_near_path = []
+    puts route
     route_points = @maps_client.decode_polyline(route["routes"].first["overview_polyline"]["points"])
     route_points.each do |coords|
       @crimes_near_path << crimes_near_node_count(coords)
