@@ -1,7 +1,4 @@
 class Direction
-
-  # @crimes = Crime.get_near_crimes(params[:midpoint], params[:radius])
-
   def initialize(args)
     @start_point = args["start_point"]
     @end_point = args["end_point"]
@@ -10,7 +7,11 @@ class Direction
 
   def calc_safe_route
     if endpoints_are_valid
-      get_safe_route
+      start_time = Time.now
+      route = get_safe_route
+      end_time = Time.now
+      puts "Total process took: #{end_time - start_time} seconds"
+      route
     end
   end
 
@@ -25,10 +26,14 @@ class Direction
   end
 
   def get_safe_route
-    waypoint_args = { start_position: @start_position, end_position: @end_position }
+    initial_route_args = { start_position: @start_position,
+                            end_position: @end_position }
+    initial_route = MassDirectionGenerator.new(initial_route_args).run
+
+    waypoint_args = { start_position: @start_position, end_position: @end_position, initial_route: initial_route }
     waypoint_generator = WaypointGenerator.new(waypoint_args)
     waypoints = waypoint_generator.run
-
+    print_waypoints(waypoints)
     mass_direction_args = { start_position: @start_position,
                             end_position: @end_position,
                             waypoints: waypoints }
@@ -40,7 +45,7 @@ class Direction
     safest_route = RouteSafetyChecker.new(safest_route_args).run
   end
 
-  def print_waypoints waypoints
+  def print_waypoints(waypoints)
     waypoints.each do |waypoint|
       puts "#{waypoint[:lat]}, #{waypoint[:lng]}"
     end
