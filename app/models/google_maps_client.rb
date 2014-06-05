@@ -1,7 +1,7 @@
 class GoogleMapsClient
   def point_geocode(point)
     response = HTTParty.get("https://maps.googleapis.com/maps/api/geocode/json",
-      query: {address: "#{point}"})
+      query: { address: "#{point}" })
     puts response
     location = response.parsed_response["results"][0]["geometry"]["location"]
     { lat: location["lat"], lng: location["lng"] }
