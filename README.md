@@ -8,9 +8,9 @@ StreetWise v1 is live: [http://streetwise.herokuapp.com](http://streetwise.herok
 
 
 ###v1
-v1 of StreetWise used the "recommended" route from GoogleMaps and generated waypoints surrounding each node of the recommended route. After generating a set of possible routes using each one of the waypoints (each one corresponds to one possible route), StreetWise analyzes each route based on the average number of crimes within a block of each point along the route. By using the average number of crimes, routes having different numbers of nodes are weighted equally and the "average safety" is the deciding factor. Finally the route with the lowest average crime number is choosen and sent to the client to be rendered.
+v1 of StreetWise uses the "recommended" route from GoogleMaps and generates waypoints surrounding each node of the recommended route. After generating a set of possible routes using each one of the waypoints (each one corresponds to one possible route), StreetWise analyzes each route based on the average number of crimes within a block of each point along the route. By using the average number of crimes, routes having different numbers of nodes are weighted equally and the "average safety" is the deciding factor. Finally the route with the lowest average crime number is choosen and sent to the client to be rendered.
 
-This approach yields a result, but leaves much to be desired. The maximum number of crimes within a block of each node on a route is calculated but not used at this point. The idea is to weight both average crime numbers and max crime number in route selection. This approach also makes many Google API calls and while that works for a single user in development, it is not particulary quick or viable for more than a few users per day.
+This approach yields a result, but leaves much to be desired. The maximum number of crimes within a block of each node on a route is calculated but not used at this point. The ideally, both average crime numbers and max crime number would be weighted and used in route selection. This approach also makes many Google API calls and while that works for a single user in development, it is not particulary quick or viable for more than a few users per day.
 
 v1 ToDos:
 * Investigate async processing of directional "safety" (threading?)
