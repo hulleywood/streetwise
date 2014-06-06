@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140602223114) do
+ActiveRecord::Schema.define(version: 20140606072411) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -30,6 +30,19 @@ ActiveRecord::Schema.define(version: 20140602223114) do
     t.string   "incidntnum"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "nodes", force: true do |t|
+    t.string "ref_id"
+    t.float  "lat"
+    t.float  "lon"
+  end
+
+  add_index "nodes", ["ref_id"], name: "index_nodes_on_ref_id", using: :btree
+
+  create_table "waypoints", force: true do |t|
+    t.string "way_ref"
+    t.string "node_ref"
   end
 
 end

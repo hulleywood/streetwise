@@ -16,3 +16,6 @@
 /tmp
 database.yml
 .env
+
+# Ignore open street map data files (really big)
+/lib/tasks/*.osm

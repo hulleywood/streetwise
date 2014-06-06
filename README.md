@@ -21,6 +21,15 @@ v1 ToDos:
 ###v2
 v2 of StreetWise is currently in progress and will entail a significantly higher amount of computation and data than v1. The goal for v2 is to use OpenStreetMap data for San Francisco to generate a nodal graph of the intersections in the city, assign a safety rating to each one, and use traversal algorithms to choose the best route based on multiple factors (safety, distance, type of road, etc). With this approach, extending the feature set to include things like finding the best route from A to B with the least intense gradient at any one point much easier to implement.
 
+v2 ToDos:
+* Add relationship between node_ref attribute of Waypoint model and a Node's ref_id
+* Add unique validations to ref_id in Node model
+* Create rake task to remove nodes not referenced in waypoints table
+* Add intersection boolean to nodes table
+* Create rake task to populate intersection column
+* Add crime rating column to nodes table
+* Create algorithm and rake task for calculating crime rating of each node and add to Nodes table
+
 
 ###ToDos
 
