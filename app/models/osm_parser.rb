@@ -5,11 +5,23 @@ class OSMParser
     @sf_lon_range = [-122.519413, -122.347423]
   end
 
-  def parse
+  def prepare_parser
     xml = File.read(@file)
-    xml_doc  = Nokogiri::XML(xml)
-    @nodes = xml_doc.xpath("//node")
-    @ways = xml_doc.xpath("//way")
+    @xml_doc  = Nokogiri::XML(xml)
+  end
+
+  def parse_nodes
+    @nodes = @xml_doc.xpath("//node")
+  end
+
+  def parse_highways
+    @ways = @xml_doc.xpath("//way")
+    @highways = []
+    @ways.each do |way|
+      if return_all_tags(way).include?("highway")
+        @highways << way
+      end
+    end
   end
 
   def return_bound_node_hashes
@@ -19,9 +31,8 @@ class OSMParser
   end
 
   def return_highways
-    parse_highways
     @highways.map! do |way|
-      { way_ref: way.first.last, nodes: return_all_node_refs(way) }
+      { osm_highway_id: way.first.last, nodes: return_all_node_refs(way) }
     end
   end
 
@@ -36,15 +47,6 @@ class OSMParser
   end
 
   private
-  def parse_highways
-    @highways = []
-    @ways.each do |way|
-      if return_all_tags(way).include?("highway")
-        @highways << way
-      end
-    end
-    @highways
-  end
 
   def return_all_node_refs(way)
     nodes = return_all_nodes(way)
@@ -78,7 +80,7 @@ class OSMParser
   end
 
   def return_formatted_node(node)
-    { ref_id: node.attributes["id"].value.to_s,
+    { osm_node_id: node.attributes["id"].value.to_s,
       lat: node.attributes["lat"].value.to_f, 
       lon: node.attributes["lon"].value.to_f }
   end

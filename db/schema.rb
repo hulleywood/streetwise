@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140606072411) do
+ActiveRecord::Schema.define(version: 20140606233335) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,17 +32,31 @@ ActiveRecord::Schema.define(version: 20140606072411) do
     t.datetime "updated_at"
   end
 
-  create_table "nodes", force: true do |t|
-    t.string "ref_id"
-    t.float  "lat"
-    t.float  "lon"
+  create_table "highways", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
-  add_index "nodes", ["ref_id"], name: "index_nodes_on_ref_id", using: :btree
+  create_table "nodes", force: true do |t|
+    t.string   "osm_node_id"
+    t.float    "lat"
+    t.float    "lon"
+    t.boolean  "intersection"
+    t.float    "crime_rating"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "nodes", ["osm_node_id"], name: "index_nodes_on_osm_node_id", using: :btree
 
   create_table "waypoints", force: true do |t|
-    t.string "way_ref"
-    t.string "node_ref"
+    t.string   "osm_node_id"
+    t.string   "osm_highway_id"
+    t.integer  "highway_id"
+    t.integer  "node_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
 end
