@@ -21,6 +21,13 @@ v1 ToDos:
 ###v2
 v2 of StreetWise is currently in progress and will entail a significantly higher amount of computation and data than v1. The goal for v2 is to use OpenStreetMap data for San Francisco to generate a nodal graph of the intersections in the city, assign a safety rating to each one, and use traversal algorithms to choose the best route based on multiple factors (safety, distance, type of road, etc). With this approach, extending the feature set to include things like finding the best route from A to B with the least intense gradient at any one point much easier to implement.
 
+v2 ToDos:
+* Rake Tasks Needed:
+  * Parse nodes and put into DB
+  * Parse highways, put into DB, create waypoints w/ relationships
+  * Remove nodes that do not have a waypoint
+  * Find intersections and add to node table
+  * Calculate crime rating for each node
 
 ###ToDos
 
