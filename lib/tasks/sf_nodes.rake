@@ -98,7 +98,9 @@ namespace :osm_tasks do
   task calculate_node_crime_rating: :environment do
     nodes = Node.all
     nodes.each do |node|
+      puts "Checking node: #{node.id}"
       crimes = Crime.near_node(node)
+      puts "Adding #{crimes.length} crimes"
       node.update_attribute( :crime_rating, crimes.length )
     end
   end

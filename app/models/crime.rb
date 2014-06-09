@@ -24,7 +24,11 @@ class Crime < ActiveRecord::Base
   def self.near_node(node)
     range_constant = 0.0016
     crimes = Crime.all
-    crimes.reject! { |crime| distance_between_nodes(node, crime) > range_constant }
+    near_crimes = []
+    crimes.each do |crime|
+      near_crimes << crime if Crime.distance_between_nodes(node, crime) < range_constant
+    end
+    near_crimes
   end
 
   private
@@ -32,7 +36,7 @@ class Crime < ActiveRecord::Base
   #   params.require(:crime).permit( :time, :category, :pddistrict, :address, :descript, :dayofweek, :resolution, :date, :y, :x, :incidntnum )
   # end
 
-  def distance_between_nodes(node, crime)
+  def self.distance_between_nodes(node, crime)
     squared_lat = (node.lat - crime.y.to_f) ** 2
     squared_lon = (node.lon - crime.x.to_f) ** 2
     Math.sqrt(squared_lat + squared_lon)
