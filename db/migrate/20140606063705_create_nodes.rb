@@ -5,7 +5,7 @@ class CreateNodes < ActiveRecord::Migration
       t.float :lat
       t.float :lon
       t.boolean :intersection, default: false
-      t.float :crime_rating
+      t.float :crime_rating, default: 0.0
       t.index :osm_node_id
       t.timestamps
     end
