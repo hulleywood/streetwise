@@ -1,34 +1,28 @@
 class Crime < ActiveRecord::Base
-  def self.get_near_crimes(midpoint, radius)
-    lat_range = Crime.get_lat_range(midpoint, radius)
-    lng_range = Crime.get_lng_range(midpoint, radius)
-    Crime.where(y: lat_range, x: lng_range)
+  validates :x, presence: true
+  validates :y, presence: true
+  validates :date, presence: true
+
+  def self.get_near_crimes(node, radius = 0.0016)
+    lat_range = Crime.get_lat_range(node, radius)
+    lon_range = Crime.get_lon_range(node, radius)
+    Crime.where(y: lat_range, x: lon_range)
   end
 
-  def self.get_lat_range(midpoint, radius)
-    if midpoint[:lat] > 0
-      (midpoint[:lat] - radius).to_s..(midpoint[:lat] + radius).to_s
+  def self.get_lat_range(node, radius)
+    if node.lat > 0
+      (node.lat - radius).to_s..(node.lat + radius).to_s
     else
-      (midpoint[:lat] + radius).to_s..(midpoint[:lat] - radius).to_s
+      (node.lat + radius).to_s..(node.lat - radius).to_s
     end
   end
 
-  def self.get_lng_range(midpoint, radius)
-    if midpoint[:lng] > 0
-      (midpoint[:lng] - radius).to_s..(midpoint[:lng] + radius).to_s
+  def self.get_lon_range(node, radius)
+    if node.lon > 0
+      (node.lon - radius).to_s..(node.lon + radius).to_s
     else
-      (midpoint[:lng] + radius).to_s..(midpoint[:lng] - radius).to_s
+      (node.lon + radius).to_s..(node.lon - radius).to_s
     end
-  end
-
-  def self.near_node(node)
-    range_constant = 0.0016
-    crimes = Crime.all
-    near_crimes = []
-    crimes.each do |crime|
-      near_crimes << crime if Crime.distance_between_nodes(node, crime) < range_constant
-    end
-    near_crimes
   end
 
   private
@@ -36,9 +30,9 @@ class Crime < ActiveRecord::Base
   #   params.require(:crime).permit( :time, :category, :pddistrict, :address, :descript, :dayofweek, :resolution, :date, :y, :x, :incidntnum )
   # end
 
-  def self.distance_between_nodes(node, crime)
-    squared_lat = (node.lat - crime.y.to_f) ** 2
-    squared_lon = (node.lon - crime.x.to_f) ** 2
-    Math.sqrt(squared_lat + squared_lon)
-  end
+  # def self.distance_between_nodes(node, crime)
+  #   squared_lat = (node.lat - crime.y.to_f) ** 2
+  #   squared_lon = (node.lon - crime.x.to_f) ** 2
+  #   Math.sqrt(squared_lat + squared_lon)
+  # end
 end

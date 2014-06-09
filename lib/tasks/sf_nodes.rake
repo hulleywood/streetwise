@@ -99,7 +99,7 @@ namespace :osm_tasks do
     nodes = Node.all
     nodes.each do |node|
       puts "Checking node: #{node.id}"
-      crimes = Crime.near_node(node)
+      crimes = Crime.get_near_crimes(node)
       puts "Adding #{crimes.length} crimes"
       node.update_attribute( :crime_rating, crimes.length )
     end
