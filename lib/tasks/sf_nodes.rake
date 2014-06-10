@@ -1,5 +1,4 @@
 namespace :osm_tasks do
-
   # Ideal order in which tasks are run:
   # rake osm_tasks:create_sf_nodes
   # rake osm_tasks:create_waypoints_and_highways
@@ -9,7 +8,21 @@ namespace :osm_tasks do
   # rake osm_tasks:find_intersection_nodes
   # rake osm_tasks:calculate_node_crime_rating
 
-  # require 'Node'
+  desc 'Create nodes, highways, waypoints'
+  task create_data: :environment do
+    `rake osm_tasks:create_sf_nodes`
+    `rake osm_tasks:create_waypoints_and_highways`
+  end
+
+  desc 'Clean data'
+  task clean_data: :environment do
+    `rake osm_tasks:remove_non_waypoint_nodes`
+    `rake osm_tasks:remove_waypoints_outside_sf`
+    `rake osm_tasks:remove_highways_outside_sf`
+    `rake osm_tasks:find_intersection_nodes`
+    `rake osm_tasks:calculate_node_crime_rating`
+    `rake osm_tasks:print_stats`
+  end
 
   # Run first if no nodes exist
   desc 'Parse OSM file for nodes inside SF limits and add to DB'
