@@ -42,8 +42,8 @@ ActiveRecord::Schema.define(version: 20140606233335) do
     t.string   "osm_node_id"
     t.float    "lat"
     t.float    "lon"
-    t.boolean  "intersection"
-    t.float    "crime_rating"
+    t.boolean  "intersection", default: false
+    t.float    "crime_rating", default: 0.0
     t.datetime "created_at"
     t.datetime "updated_at"
   end
