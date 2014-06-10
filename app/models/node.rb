@@ -6,4 +6,8 @@ class Node < ActiveRecord::Base
   validates :crime_rating, presence: true
   validates :lat, presence: true
   validates :lon, presence: true
+
+  def self.intersections
+    Node.where(intersection: true)
+  end
 end

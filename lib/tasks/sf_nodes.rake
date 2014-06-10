@@ -8,22 +8,6 @@ namespace :osm_tasks do
   # rake osm_tasks:find_intersection_nodes
   # rake osm_tasks:calculate_node_crime_rating
 
-  desc 'Create nodes, highways, waypoints'
-  task create_data: :environment do
-    `rake osm_tasks:create_sf_nodes`
-    `rake osm_tasks:create_waypoints_and_highways`
-  end
-
-  desc 'Clean data'
-  task clean_data: :environment do
-    `rake osm_tasks:remove_non_waypoint_nodes`
-    `rake osm_tasks:remove_waypoints_outside_sf`
-    `rake osm_tasks:remove_highways_outside_sf`
-    `rake osm_tasks:find_intersection_nodes`
-    `rake osm_tasks:calculate_node_crime_rating`
-    `rake osm_tasks:print_stats`
-  end
-
   # Run first if no nodes exist
   desc 'Parse OSM file for nodes inside SF limits and add to DB'
   task create_sf_nodes: :environment do
@@ -33,7 +17,7 @@ namespace :osm_tasks do
     map_parser.parse_nodes
     osm_nodes = map_parser.return_bound_node_hashes
 
-    puts "About to add #{nodes.length} nodes to the database..."
+    puts "About to add #{osm_nodes.length} nodes to the database..."
     osm_nodes.each { |node| Node.create(node) }
 
     # batch_of_threads = []
@@ -82,10 +66,17 @@ namespace :osm_tasks do
 
         # Assign next and previous nodes to each waypoint, calling from the highway
         # node list using indices
-        previous_node = highway[:nodes][index - 1] if index > 0
-        next_node = highway[:nodes][index + 1] if index < (highway[:nodes].length-1)
-        new_waypoint.update_attribute( :previous_node, previous_node.id ) if previous_node
-        new_waypoint.update_attribute( :new_node, next_node.id ) if next_node
+        previous_osm_node = highway[:nodes][index - 1] if index > 0
+        if previous_osm_node
+          previous_node = Node.find_by_osm_node_id(previous_osm_node)
+          new_waypoint.previous_node = previous_node
+        end
+
+        next_osm_node = highway[:nodes][index + 1] if index < (highway[:nodes].length-1)
+        if next_osm_node
+          next_node = Node.find_by_osm_node_id(next_osm_node)
+          new_waypoint.next_node = next_node
+        end
       end
     end
 
@@ -137,7 +128,7 @@ namespace :osm_tasks do
     tstart = Time.now
 
     batch_of_threads = []
-    pool_size = 14
+    pool_size = 10
     batch_size = Node.count/pool_size
     puts "Checking #{pool_size} batches of #{batch_size} nodes"
 
@@ -162,7 +153,7 @@ namespace :osm_tasks do
   task remove_waypoints_outside_sf: :environment do
     tstart = Time.now
     batch_of_threads = []
-    pool_size = 14
+    pool_size = 10
     batch_size = Waypoint.count/pool_size
     puts "Checking #{pool_size} batches of #{batch_size} waypoints"
 
@@ -187,7 +178,7 @@ namespace :osm_tasks do
   task remove_highways_outside_sf: :environment do
     tstart = Time.now
     batch_of_threads = []
-    pool_size = 14
+    pool_size = 10
     batch_size = Highway.count/pool_size
     puts "Checking #{pool_size} batches of #{batch_size} highways"
 
@@ -209,8 +200,9 @@ namespace :osm_tasks do
   # Run after nodes, waypoints, highways have been created and sanitized
   desc 'Find intersection nodes'
   task find_intersection_nodes: :environment do
+    tstart = Time.now
     batch_of_threads = []
-    pool_size = 14
+    pool_size = 10
     batch_size = Node.count/pool_size
     puts "Checking #{pool_size} batches of #{batch_size} nodes"
 
@@ -231,9 +223,10 @@ namespace :osm_tasks do
 
   # Run after nodes, waypoints, highways have been created and sanitized
   desc 'Calculate crime rating for each node'
-  task calculate_node_crime_rating: :environment do    
+  task calculate_node_crime_rating: :environment do  
+    tstart = Time.now  
     batch_of_threads = []
-    pool_size = 14
+    pool_size = 10
     batch_size = Node.count/pool_size
     puts "Checking #{pool_size} batches of #{batch_size} nodes"
 

@@ -53,6 +53,8 @@ ActiveRecord::Schema.define(version: 20140606233335) do
   create_table "waypoints", force: true do |t|
     t.string   "osm_node_id"
     t.string   "osm_highway_id"
+    t.integer  "previous_node_id"
+    t.integer  "next_node_id"
     t.integer  "highway_id"
     t.integer  "node_id"
     t.datetime "created_at"
