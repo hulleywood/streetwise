@@ -26,7 +26,7 @@ namespace :osm_data_clean do
   end
 
   # Run after nodes and waypoints are populated
-  # Run before crime stats are calculated or intersections found  
+  # Run before crime stats are calculated or intersections found
   desc 'Remove waypoints that have no nodes in SF'
   task remove_waypoints_outside_sf: :environment do
     tstart = Time.now
@@ -50,32 +50,7 @@ namespace :osm_data_clean do
     puts "Time to complete: #{tend - tstart} seconds"
   end
 
-  # Run after nodes and waypoints are and sanitized
-  # Run before crime stats are calculated or intersections found
-  desc 'Remove highways that have no nodes in SF'
-  task remove_highways_outside_sf: :environment do
-    tstart = Time.now
-    batch_of_threads = []
-    pool_size = 10
-    batch_size = Highway.count/pool_size
-    puts "Checking #{pool_size} batches of #{batch_size} highways"
-
-    Highway.find_in_batches(batch_size: batch_size) do |batch_of_highways|
-      thr = Thread.new(batch_of_highways) do |highways|
-        highways.each do |highway|
-          highway.destroy if highway.waypoints.size == 0
-        end
-        puts "Highway group finished"
-      end
-      batch_of_threads << thr
-    end
-
-    batch_of_threads.map(&:join)
-    tend = Time.now
-    puts "Time to complete: #{tend - tstart} seconds"
-  end
-
-  # Run after nodes, waypoints, highways have been created and sanitized
+  # Run after nodes and waypoints have been created and sanitized
   desc 'Find intersection nodes'
   task find_intersection_nodes: :environment do
     tstart = Time.now
@@ -99,10 +74,10 @@ namespace :osm_data_clean do
     puts "Time to complete: #{tend - tstart} seconds"
   end
 
-  # Run after nodes, waypoints, highways have been created and sanitized
+  # Run after nodes and waypoints have been created and sanitized
   desc 'Calculate crime rating for each node'
-  task calculate_node_crime_rating: :environment do  
-    tstart = Time.now  
+  task calculate_node_crime_rating: :environment do
+    tstart = Time.now
     batch_of_threads = []
     pool_size = 10
     batch_size = Node.count/pool_size
@@ -128,7 +103,6 @@ namespace :osm_data_clean do
   task print_stats: :environment do
     puts "Crimes: #{Crime.count}"
     puts "Nodes: #{Node.count}"
-    puts "Highways: #{Highway.count}"
     puts "Waypoints: #{Waypoint.count}"
   end
 end

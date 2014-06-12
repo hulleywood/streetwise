@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140606233335) do
+ActiveRecord::Schema.define(version: 20140606072411) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,12 +32,6 @@ ActiveRecord::Schema.define(version: 20140606233335) do
     t.datetime "updated_at"
   end
 
-  create_table "highways", force: true do |t|
-    t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "nodes", force: true do |t|
     t.string   "osm_node_id"
     t.float    "lat"
@@ -52,10 +46,8 @@ ActiveRecord::Schema.define(version: 20140606233335) do
 
   create_table "waypoints", force: true do |t|
     t.string   "osm_node_id"
-    t.string   "osm_highway_id"
     t.integer  "previous_node_id"
     t.integer  "next_node_id"
-    t.integer  "highway_id"
     t.integer  "node_id"
     t.datetime "created_at"
     t.datetime "updated_at"
