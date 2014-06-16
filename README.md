@@ -37,6 +37,7 @@ After doing some further research on graphs and node traversal, it seems like a 
 * Rake tasks are written that will update the crime ratings for each node
 * After the crimes are updated, each intersectional relationship must be updated with the new crime numbers
 
+
 ###ToDos
 
 * Autocomplete routes
@@ -44,3 +45,9 @@ After doing some further research on graphs and node traversal, it seems like a 
 * Server should return directions, not just start/end/midpoints (requires additional API request)
 * Write about section for website
 * Style website for desktop and mobile
+
+
+###Bugs
+
+* When creating waypoints, the next_node_id and previous_node_id fields are always nil, yet waypoint.next_nod returns the correct Node object
+* Neo4j database indices do not start at 0

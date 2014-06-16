@@ -1,8 +1,4 @@
 namespace :osm_data_creation do
-  # Ideal order in which tasks are run:
-  # rake osm_tasks:create_sf_nodes
-  # rake osm_tasks:create_waypoints
-
   # Run first if no nodes exist
   desc 'Parse OSM file for nodes inside SF limits and add to DB'
   task create_sf_nodes: :environment do
@@ -23,6 +19,7 @@ namespace :osm_data_creation do
   # Run second, must be ran after nodes are populated
   desc 'Parse OSM file for ways, create waypoints'
   task create_waypoints: :environment do
+    tstart = Time.now
     map_parser = OSMParser.new('lib/tasks/san-francisco.osm')
     map_parser.prepare_parser
     map_parser.parse_highways
@@ -39,14 +36,16 @@ namespace :osm_data_creation do
         previous_osm_node = highway[:nodes][index - 1] if index > 0
         if previous_osm_node
           previous_node = Node.find_by_osm_node_id(previous_osm_node)
-          new_waypoint.previous_node = previous_node
+          new_waypoint.previous_node = previous_node if previous_node
         end
 
         next_osm_node = highway[:nodes][index + 1] if index < (highway[:nodes].length-1)
         if next_osm_node
           next_node = Node.find_by_osm_node_id(next_osm_node)
-          new_waypoint.next_node = next_node
+          new_waypoint.next_node = next_node if next_node
         end
+
+        new_waypoint.save
       end
     end
 
