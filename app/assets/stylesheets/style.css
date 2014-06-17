@@ -4,8 +4,8 @@
   text-shadow: none;
 }
 
-.form-group button {
-  margin-bottom: 10px;
+.directions-group {
+  display: inline-block;
 }
 
 #directions {
