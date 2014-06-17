@@ -5,13 +5,18 @@
 }
 
 .directions-group {
-  display: inline-block;
-}
-
-#directions {
-  overflow: hidden;
+  margin-bottom: 15px;
 }
 
 #map-canvas {
   margin-bottom: 15px;
+}
+
+button.directions {
+  width: 100%;
+}
+
+.search {
+  margin: 0 15px;
+  padding: 0;
 }

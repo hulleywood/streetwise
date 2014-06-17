@@ -44,12 +44,7 @@
     <%= render 'shared/navbar' %>
 
     <div class="container-fluid">
-      <div class="row-fluid">
-        <div class="span9">
-          <%= bootstrap_flash %>
-          <%= yield %>
-        </div>
-      </div><!--/row-->
+      <%= yield %>
     </div>
   </body>
 </html>
