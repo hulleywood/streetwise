@@ -1,6 +1,23 @@
 class Graph
   @neo = Neography::Rest.new
 
+  def self.shortest_path(ar_node1, ar_node2, relationship_name, depth=Node.count)
+    puts "#{ar_node1.lat}, #{ar_node1.lon}"
+    puts "#{ar_node2.lat}, #{ar_node2.lon}"
+    relationships = {"type" => relationship_name, "direction" => "all"}
+    node1 = Graph.find_by_ar_id(ar_node1.id)
+    node2 = Graph.find_by_ar_id(ar_node2.id)
+    # @neo.get_path(node1, node2, relationships, depth=depth, algorithm="shortestPath")
+    @neo.get_shortest_weighted_path(node1, node2, relationships,
+                                weight_attr='distance', depth=depth,
+                                algorithm='dijkstra')
+  end
+
+  def self.get_distance_info
+    rels = Graph.all_relationships
+    p rels.length
+  end
+
   def self.create_node(ar_node)
     node_args = Graph.create_graph_args(ar_node)
     @neo.create_node(node_args)
@@ -12,35 +29,34 @@ class Graph
     @neo.add_to_index("ar_node_id_index", "ar_node_id", ar_node.id, graph_node)
   end
 
-  def self.all
+  def self.all_relationships
+    rels = @neo.execute_query("START rels = relationship(*) RETURN rels")["data"]
+    rels.map { |rel| rel.first }
+  end
+
+  def self.all_nodes
     nodes = @neo.execute_query("START nodes = node(*) RETURN nodes")["data"]
     nodes.map { |node| node.first }
   end
 
-  def self.intersections
-
+  def self.create_neighbor_relationships(graph_node, ar_node, wpt)
+    make_neighbor_relationship(graph_node, ar_node, wpt.previous_node) if wpt.previous_node
+    make_neighbor_relationship(graph_node, ar_node, wpt.next_node) if wpt.next_node
   end
 
-  def self.create_neighbor_relationships(graph_node, wpt)
-    make_neighbor_relationship(graph_node, wpt.previous_node) if wpt.previous_node
-    make_neighbor_relationship(graph_node, wpt.next_node) if wpt.next_node
-  end
-
-  def self.create_intersection_relationships(current_int, next_int)
-    unless Graph.relationship_exists(current_int, next_int, 'connects')
-
-    end
+  def self.find_by_ar_id(ar_id)
+    @neo.get_node_index("ar_node_id_index", "ar_node_id", ar_id).first
   end
 
   private
-  def self.make_neighbor_relationship(graph_node, ar_node)
-    neighbor_node = @neo.get_node_index("ar_node_id_index", "ar_node_id", ar_node.id).first
+  def self.make_neighbor_relationship(graph_node, ar_node, neighbor_ar)
+    neighbor_node = Graph.find_by_ar_id(neighbor_ar.id)
 
     unless Graph.relationship_exists(graph_node, neighbor_node, 'neighbors')
       rel = @neo.create_relationship("neighbors", graph_node, neighbor_node)
       distance = Graph.get_node_distance(graph_node, neighbor_node)
-      puts "Distance: #{distance}"
-      @neo.set_relationship_properties(rel, {"distance" => distance})
+      crime_rating = Graph.get_crime_rating(ar_node, neighbor_ar)
+      @neo.set_relationship_properties(rel, {"distance" => distance, "crime_rating" => crime_rating})
     end
   end
 
@@ -70,9 +86,7 @@ class Graph
 
   def self.get_node_distance(node1, node2)
     squared_lat = (Graph.get_lat(node1) - Graph.get_lat(node2)) ** 2
-    puts "Squared lat: #{squared_lat}"
     squared_lon = (Graph.get_lon(node1) - Graph.get_lon(node2)) ** 2
-    puts "Squared lon: #{squared_lon}"
     Math.sqrt(squared_lat + squared_lon)
   end
 
@@ -82,5 +96,9 @@ class Graph
 
   def self.get_lon(node)
     node["data"]["lon"].to_f
+  end
+
+  def self.get_crime_rating(node1, node2)
+    (node1.crime_rating + node2.crime_rating)/2
   end
 end

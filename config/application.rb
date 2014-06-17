@@ -10,6 +10,7 @@ require "sprockets/railtie"
 # require 'dotenv'
 require 'polylines'
 require 'nokogiri'
+require 'database_cleaner'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -17,6 +18,9 @@ Bundler.require(*Rails.groups)
 
 module Streetwise
   class Application < Rails::Application
+
+    DatabaseCleaner.strategy = :truncation, {:only => %w[waypoints]}
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.

@@ -20,6 +20,7 @@ namespace :osm_data_creation do
   desc 'Parse OSM file for ways, create waypoints'
   task create_waypoints: :environment do
     tstart = Time.now
+    DatabaseCleaner.clean
     map_parser = OSMParser.new('lib/tasks/san-francisco.osm')
     map_parser.prepare_parser
     map_parser.parse_highways
