@@ -12,8 +12,9 @@
   height: 500px;
 }
 
-@media (max-width: 1280px) {
-  .navbar-header {
+/*Always collapse navbar*/
+/*@media (max-width: 1280px) {*/
+/*  .navbar-header {
     float: none;
   }
   .navbar-toggle {
@@ -36,5 +37,5 @@
   .navbar-nav>li>a {
     padding-top: 10px;
     padding-bottom: 10px;
-  }
-}
+  }*/
+/*}*/
