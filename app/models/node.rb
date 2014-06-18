@@ -20,7 +20,11 @@ class Node < ActiveRecord::Base
     lat_range = Node.coord_range(coords[:lat], distance)
     lon_range = Node.coord_range(coords[:lon], distance)
     close_nodes = Node.where(lat: lat_range, lon: lon_range).to_a
-    close_nodes.map{ |node| { node: node, distance: distance } }
+    close_nodes.map! do |node|
+      distance_to = Node.distance_between_points(node, coords)
+      { node: node, distance: distance_to }
+    end
+    close_nodes.sort_by { |node| node[:distance] }
   end
 
   def self.coord_range(coord, distance)

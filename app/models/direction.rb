@@ -32,8 +32,6 @@ class Direction
 
   def find_closest_node(coords)
     close_nodes = Node.close_nodes(coords)
-    close_nodes.sort_by! {|node| node[:distance]}
-    p close_nodes
     close_nodes.first[:node]
   end
 end
