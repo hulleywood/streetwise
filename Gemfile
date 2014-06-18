@@ -12,6 +12,7 @@ gem 'httparty'
 gem 'soda-ruby', :require => 'soda'
 gem 'polylines'
 gem 'nokogiri'
+gem 'database_cleaner'
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.0.0'
@@ -23,7 +24,6 @@ group :test  do
   # gem 'faker'
   gem 'capybara'
   # gem 'selenium-webdriver'
-  gem 'database_cleaner'
 end
 
 gem 'therubyracer'
