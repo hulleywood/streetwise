@@ -30,15 +30,10 @@ class Direction
     @destination_node = find_closest_node(@destination_coords)
   end
 
-  def find_closest_node(node_latlon)
-    nodes = Node.all.to_a
-    close_nodes = []
-    nodes.each do |node|
-      distance = Node.distance_between_points(node, node_latlon)
-      if distance < 0.0016
-        close_nodes << { node: node, distance: distance }
-      end
-    end
-    close_nodes.sort_by{|node| node[:distance]}.first[:node]
+  def find_closest_node(coords)
+    close_nodes = Node.close_nodes(coords)
+    close_nodes.sort_by! {|node| node[:distance]}
+    p close_nodes
+    close_nodes.first[:node]
   end
 end

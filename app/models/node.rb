@@ -15,4 +15,19 @@ class Node < ActiveRecord::Base
     squared_lon = (point1[:lon] - point2[:lon]) ** 2
     Math.sqrt(squared_lat + squared_lon)
   end
+
+  def self.close_nodes(coords, distance = 0.0016)
+    lat_range = Node.coord_range(coords[:lat], distance)
+    lon_range = Node.coord_range(coords[:lon], distance)
+    close_nodes = Node.where(lat: lat_range, lon: lon_range).to_a
+    close_nodes.map{ |node| { node: node, distance: distance } }
+  end
+
+  def self.coord_range(coord, distance)
+    if coord > 0
+      (coord - distance).to_s..(coord + distance).to_s
+    else
+      (coord - distance).to_s..(coord + distance).to_s
+    end
+  end
 end
