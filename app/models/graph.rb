@@ -22,7 +22,7 @@ class Graph
   end
 
   def self.update_relationship_weight(rel, coeff = 4.4011318e-05)
-    weight = rel["data"]["distance"] + coeff * rel["data"]["crime_rating"]
+    weight = rel["data"]["distance"] + coeff * rel["data"]["crime_rating"] / 2
     @neo.set_relationship_properties(rel, {"weight" => weight})
   end
 
