@@ -46,18 +46,4 @@ namespace :graph_seed do
     tend = Time.now
     puts "Time to complete: #{tend - tstart} seconds"
   end
-
-  # desc 'Create intersection relationships'
-  # task create_intersection_relationships: :environment do
-  #   tstart = Time.now
-
-  #   # get each intersection node
-  #   intersection_nodes = Graph.intersections
-  #   # for each, find every immediate neighbor intersection
-  #   # determine distance, crime, total cost
-  #   # create relationship
-
-  #   tend = Time.now
-  #   puts "Time to complete: #{tend - tstart} seconds"
-  # end
 end
