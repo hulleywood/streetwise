@@ -1,7 +1,7 @@
 class DirectionsController < ApplicationController
   def show
     @direction = Direction.new(params)
-    if valid_request(@direction)
+    if valid_request
       safe_route = @direction.calc_safe_route
       if safe_route
         render json: safe_route
@@ -14,8 +14,7 @@ class DirectionsController < ApplicationController
   end
 
   private
-  def valid_request(direction)
-    p direction
-    direction.origin && direction.destination
+  def valid_request
+    @direction.origin && @direction.destination
   end
 end
