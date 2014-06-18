@@ -20,11 +20,17 @@ class RouteSafetyChecker
 
   def return_ranked_routes
     ranked_routes = []
+    threads = []
     @possible_routes.each do |route|
-      ranked_routes << { route: route,
-        avg_near_crimes: avg_near_crimes(route),
-        max_crimes: max_crimes(route) }
+      thr = Thread.new() do
+        ranked_routes << {
+          route: route,
+          avg_near_crimes: avg_near_crimes(route),
+          max_crimes: max_crimes(route) }
+      end
+      threads << thr
     end
+    threads.map(&:join)
     ranked_routes
   end
 

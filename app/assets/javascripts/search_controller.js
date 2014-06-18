@@ -81,7 +81,7 @@ SearchController.prototype = {
     ajaxRequest.fail(this.processErrors)
   },
   processDirections: function(response) {
-    $('form#directions').find('button').removeAttr('disabled');
+    $('.directions-group').find('button').removeAttr('disabled');
 
     console.log(response)
 

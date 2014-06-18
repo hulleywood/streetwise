@@ -6,7 +6,7 @@ class Crime < ActiveRecord::Base
   def self.get_near_crimes(node, radius = 0.0016)
     lat_range = Crime.get_lat_range(node, radius)
     lon_range = Crime.get_lon_range(node, radius)
-    Crime.where(y: lat_range, x: lon_range)
+    Crime.where(y: lat_range, x: lon_range).to_a
   end
 
   private
