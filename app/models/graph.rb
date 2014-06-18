@@ -1,5 +1,7 @@
 class Graph
-  @neo = Neography::Rest.new
+  neo4j_url = ENV["GRAPHENEDB_URL"] || "http://localhost:7474"
+  # uri = URI.parse(neo4j_url)
+  @neo = Neography::Rest.new(neo4j_url)
 
   def self.weighted_path(ar_node1, ar_node2, weighting = "weight")
     relationships = {"type" => 'neighbors', "direction" => "out"}

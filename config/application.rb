@@ -11,6 +11,7 @@ require "sprockets/railtie"
 require 'polylines'
 require 'nokogiri'
 require 'database_cleaner'
+require 'neography'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
