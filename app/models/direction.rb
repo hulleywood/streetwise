@@ -1,53 +1,45 @@
 class Direction
+  attr
   def initialize(args)
-    @start_point = args["origin"]
-    @end_point = args["destination"]
+    @origin_address = args["origin"]
+    @destination_address = args["destination"]
     @maps_client = GoogleMapsClient.new
+    geocode_endpoints
   end
 
-  def calc_safe_route
-    if endpoints_are_valid
-      start_time = Time.now
-      route = get_safe_route
-      end_time = Time.now
-      puts "Total process took: #{end_time - start_time} seconds"
-      route
-    end
+  def origin_node
+    @origin_node
+  end
+
+  def destination_node
+    @destination_node
+  end
+
+  def gen_safe_route
+    @path_points = Graph.weighted_path(@origin_node, @destination_node)
+    # @path_polyline = @maps_client.encode_polyline(@path_points)
+    { path: @path_points, origin: @origin_address, destination: @destination_address, origin_coords: @origin_coords, destination_coords: @destination_coords }
   end
 
   private
-  def endpoints_are_valid
-    if @start_point && @end_point
-      @start_position = @maps_client.point_geocode(@start_point)
-      @end_position = @maps_client.point_geocode(@end_point)
+  def geocode_endpoints
+    if @origin_address && @destination_address
+      @origin_coords = @maps_client.point_geocode(@origin_address)
+      @destination_coords = @maps_client.point_geocode(@destination_address)
     end
-
-    !!(@start_position && @end_position)
+    @origin_node = find_closest_node(@origin_coords)
+    @destination_node = find_closest_node(@destination_coords)
   end
 
-  def get_safe_route
-    initial_route_args = { start_position: @start_position,
-                            end_position: @end_position }
-    initial_route = MassDirectionGenerator.new(initial_route_args).run
-
-    waypoint_args = { start_position: @start_position, end_position: @end_position, initial_route: initial_route }
-    waypoint_generator = WaypointGenerator.new(waypoint_args)
-    waypoints = waypoint_generator.run
-    print_waypoints(waypoints)
-    mass_direction_args = { start_position: @start_position,
-                            end_position: @end_position,
-                            waypoints: waypoints }
-    possible_routes = MassDirectionGenerator.new(mass_direction_args).run
-
-    safest_route_args = { midpoint: waypoint_generator.midpoint,
-                          radius: waypoint_generator.radius,
-                          possible_routes: possible_routes }
-    safest_route = RouteSafetyChecker.new(safest_route_args).run
-  end
-
-  def print_waypoints(waypoints)
-    waypoints.each do |waypoint|
-      puts "#{waypoint[:lat]}, #{waypoint[:lon]}"
+  def find_closest_node(node_latlon)
+    nodes = Node.all.to_a
+    close_nodes = []
+    nodes.each do |node|
+      distance = Node.distance_between_points(node, node_latlon)
+      if distance < 0.0016
+        close_nodes << { node: node, distance: distance }
+      end
     end
+    close_nodes.sort_by{|node| node[:distance]}.first[:node]
   end
 end

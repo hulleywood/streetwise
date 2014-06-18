@@ -4,7 +4,9 @@ var SearchController = function(mapView) {
   this.directionsDisplay = new google.maps.DirectionsRenderer();
   this.directionsService = new google.maps.DirectionsService();
   this.geocoder = new google.maps.Geocoder();
+  this.bounds = new google.maps.LatLngBounds();
   this.initialize()
+  this.overlays = []
 }
 
 SearchController.prototype = {
@@ -82,25 +84,11 @@ SearchController.prototype = {
   },
   processDirections: function(response) {
     $('.directions-group').find('button').removeAttr('disabled');
-
-    console.log(response)
-
-    var waypts = []
-    var origin = response.routes[0].legs[0].start_address
-    var destination = response.routes[0].legs[0].end_address
-    waypts.push({location: new google.maps.LatLng(response.routes[0].legs[0].via_waypoint[0].location.lat, response.routes[0].legs[0].via_waypoint[0].location.lng), stopover: false })
-    var request = {
-      origin: origin,
-      destination: destination,
-      waypoints: waypts,
-      travelMode: google.maps.TravelMode.WALKING
-    }
-    this.directionsService.route(request, function(
-      response, status) {
-      if (status == google.maps.DirectionsStatus.OK) {
-        this.directionsDisplay.setDirections(response);
-      }
-    }.bind(this));
+    this.clearMapOverlays()
+    this.addPathToMap(response.path)
+    this.addMarkerToMap(response.origin, response.origin_coords)
+    this.addMarkerToMap(response.destination, response.destination_coords)
+    this.reboundMap([response.origin_coords, response.destination_coords])
   },
   processErrors: function(response) {
     $('.directions-group').find('button').removeAttr('disabled');
@@ -115,5 +103,45 @@ SearchController.prototype = {
   },
   showErrorMessage: function(error) {
     $('#errors').append('<p>'+error+'</p>')
+  },
+  addPathToMap: function(path) {
+    var directionCoordinates = [];
+
+    for (var i = 0; i < path.length; i++) {
+      latLon = new google.maps.LatLng(path[i][0], path[i][1])
+      directionCoordinates.push(latLon)
+      this.bounds.extend(latLon)
+    }
+
+    var directionPath = new google.maps.Polyline({
+      path: directionCoordinates,
+      geodesic: true,
+      strokeColor: '#FF0000',
+      strokeOpacity: 1.0,
+      strokeWeight: 2
+    });
+    directionPath.setMap(this.map);
+    this.overlays.push(directionPath)
+  },
+  addMarkerToMap: function(address, coords) {
+    var latLon = new google.maps.LatLng(coords.lat, coords.lon);
+    var marker = new google.maps.Marker({
+        position: latLon,
+        map: this.map,
+        title: address
+    });
+    this.overlays.push(marker)
+  },
+  reboundMap: function(coords) {
+    for (var i = 0; i < coords.length; i++) {
+          var latLon = new google.maps.LatLng(coords[i].lat, coords[i].lon)
+          this.bounds.extend(latLon)
+    }
+    this.map.fitBounds(this.bounds)
+  },
+  clearMapOverlays: function() {
+    for (var i = 0; i < this.overlays.length; i ++) {
+      this.overlays[i].setMap(null)
+    }
   }
 }

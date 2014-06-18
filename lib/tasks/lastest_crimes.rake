@@ -2,6 +2,8 @@ namespace :latest_crimes do
   desc 'connect to SFGOV api and grab last 3 months of crime data'
   task seed: :environment do
 
+    tstart = Time.now
+
     IGRNORED_CATEGORIES = [
       "NON-CRIMINAL",
       "BAD CHECKS",
@@ -32,5 +34,9 @@ namespace :latest_crimes do
         Crime.create!(crime.to_hash)
       end
     end
+
+    tend = Time.now
+    puts "Successfully added #{Crime.count} crimes to the database!"
+    puts "Time to complete: #{tend - tstart} seconds"
   end
 end

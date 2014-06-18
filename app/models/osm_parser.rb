@@ -81,7 +81,7 @@ class OSMParser
 
   def return_formatted_node(node)
     { osm_node_id: node.attributes["id"].value.to_s,
-      lat: node.attributes["lat"].value.to_f, 
+      lat: node.attributes["lat"].value.to_f,
       lon: node.attributes["lon"].value.to_f }
   end
 
@@ -102,24 +102,4 @@ class OSMParser
     in_lon_range = @sf_lon_range.first < node.attributes["lon"].value.to_f && @sf_lon_range.last > node.attributes["lon"].value.to_f
     !(in_lon_range && in_lat_range)
   end
-
-  # def return_node_ref(node)
-  #   node.first.last.to_i
-  # end
-
-  # def return_intersections(nodes)
-  #   node_refs = nodes.map { |node| return_node_ref(node) }
-  #   @intersections = parse_nodes_for_inclusion_in_set(@sf_nodes, node_refs)
-  # end
-
-  # def parse_nodes_for_inclusion_in_set(nodes, set)
-  #   included_nodes = []
-  #   nodes.each do |node|
-  #     if set.include?(node.attributes["id"].value.to_i)
-  #       puts "#{node.attributes["lat"].value.to_f}, #{node.attributes["lon"].value.to_f}"
-  #       included_nodes << node
-  #     end
-  #   end
-  #   included_nodes
-  # end
 end

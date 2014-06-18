@@ -21,13 +21,22 @@ v1 ToDos:
 ###v2
 v2 of StreetWise is currently in progress and will entail a significantly higher amount of computation and data than v1. The goal for v2 is to use OpenStreetMap data for San Francisco to generate a nodal graph of the intersections in the city, assign a safety rating to each one, and use traversal algorithms to choose the best route based on multiple factors (safety, distance, type of road, etc). With this approach, extending the feature set to include things like finding the best route from A to B with the least intense gradient at any one point much easier to implement.
 
-v2 ToDos:
-* Rake Tasks Needed:
-  * Parse nodes and put into DB
-  * Parse highways, put into DB, create waypoints w/ relationships
-  * Remove nodes that do not have a waypoint
-  * Find intersections and add to node table
-  * Calculate crime rating for each node
+
+Neo4j Implementation
+
+After doing some further research on graphs and node traversal, it seems like a good idea to try using a graph database to store the data and use for traversal. After playing with the potential schema for a bit, what I've decided to pursue is:
+
+* Every walkable node from the PG database gets migrated to the graph DB
+* Each node in the graph has: lat, lon, crime_rating, intersection
+* Each node is connected to it's neighbors through a "walkable" relationship that has 3 properties
+ * Distance
+ * Crime
+ * Total cost (some combination of distance and crime)
+* Each node that is an intersection is connected to it's intersectional neighbors with a relationshp (same props)
+* To find the shortest path, the instersectional relationships are traversed using weights based off total cost
+* Rake tasks are written that will update the crime ratings for each node
+* After the crimes are updated, each intersectional relationship must be updated with the new crime numbers
+
 
 ###ToDos
 
@@ -36,3 +45,9 @@ v2 ToDos:
 * Server should return directions, not just start/end/midpoints (requires additional API request)
 * Write about section for website
 * Style website for desktop and mobile
+
+
+###Bugs
+
+* When creating waypoints, the next_node_id and previous_node_id fields are always nil, yet waypoint.next_nod returns the correct Node object
+* Neo4j database indices do not start at 0

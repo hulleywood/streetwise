@@ -8,6 +8,5 @@ describe Node do
 
   context 'associations' do
     it { should have_many :waypoints }
-    it { should have_many :highways }
   end
 end
