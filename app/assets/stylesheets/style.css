@@ -1,0 +1,22 @@
+#about-toggle {
+  margin: 5px;
+  color: #777777;
+  text-shadow: none;
+}
+
+.directions-group {
+  margin-bottom: 15px;
+}
+
+#map-canvas {
+  margin-bottom: 15px;
+}
+
+button.directions {
+  width: 100%;
+}
+
+.search {
+  margin: 0 15px;
+  padding: 0;
+}

@@ -6,10 +6,6 @@ gem 'turbolinks'
 gem 'jbuilder', '~> 2.0'
 gem 'jquery-rails'
 
-# gem 'therubyracer'
-# gem 'less-rails'
-gem 'twitter-bootstrap-rails'
-
 gem 'httparty'
 # gem 'dotenv-rails', :groups => [:development, :test]
 gem 'soda-ruby', :require => 'soda'
@@ -29,7 +25,9 @@ group :test  do
   gem 'database_cleaner'
 end
 
-group :assets do
-  gem 'sass-rails'
-  gem 'uglifier', '>= 1.0.3'
-end
+gem 'therubyracer'
+gem 'less-rails'
+gem 'twitter-bootstrap-rails',
+:github => 'seyhunak/twitter-bootstrap-rails',
+:branch => 'bootstrap3'
+gem 'uglifier', '>= 1.0.3'
