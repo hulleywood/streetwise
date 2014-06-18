@@ -17,7 +17,6 @@ class Direction
 
   def gen_safe_route
     @path_points = Graph.weighted_path(@origin_node, @destination_node)
-    # @path_polyline = @maps_client.encode_polyline(@path_points)
     { path: @path_points, origin: @origin_address, destination: @destination_address, origin_coords: @origin_coords, destination_coords: @destination_coords }
   end
 

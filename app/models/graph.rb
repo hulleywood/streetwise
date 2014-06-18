@@ -11,7 +11,6 @@ class Graph
     safest = @neo.get_shortest_weighted_path(node1, node2, relationships,
                                 weight_attr=weighting, depth=max_depth,
                                 algorithm='dijkstra').first
-    # Graph.print_path(safest)
     Graph.return_path_points(safest)
   end
 
