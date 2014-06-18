@@ -1,4 +1,6 @@
 $(document).ready(function() {
-  searchController = new SearchController();
-  $('form#directions').submit(searchController.initiateDirectionSearch.bind(searchController));
+  var mapView = new MapView()
+  searchController = new SearchController(mapView);
+  mapView.resize();
+  $('button.directions').on('click', searchController.initiateDirectionSearch.bind(searchController));
 });

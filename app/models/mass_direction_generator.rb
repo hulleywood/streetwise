@@ -8,10 +8,15 @@ class MassDirectionGenerator
 
   def run
     possible_routes = []
+    threads = []
     if @waypoints
       @waypoints.each do |waypoint|
-        possible_routes << @maps_client.get_route(@start_position, @end_position, waypoint)
+        thr = Thread.new() do
+          possible_routes << @maps_client.get_route(@start_position, @end_position, waypoint)
+        end
+        threads << thr
       end
+      threads.map(&:join)
     else
       possible_routes << @maps_client.get_initial_route(@start_position, @end_position)
     end

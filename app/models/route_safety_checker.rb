@@ -20,11 +20,17 @@ class RouteSafetyChecker
 
   def return_ranked_routes
     ranked_routes = []
+    threads = []
     @possible_routes.each do |route|
-      ranked_routes << { route: route,
-        avg_near_crimes: avg_near_crimes(route),
-        max_crimes: max_crimes(route) }
+      thr = Thread.new() do
+        ranked_routes << {
+          route: route,
+          avg_near_crimes: avg_near_crimes(route),
+          max_crimes: max_crimes(route) }
+      end
+      threads << thr
     end
+    threads.map(&:join)
     ranked_routes
   end
 
@@ -48,8 +54,8 @@ class RouteSafetyChecker
 
   def distance_between_nodes(coords, crime)
     squared_lat = (coords[0] - crime.y.to_f) ** 2
-    squared_lng = (coords[1] - crime.x.to_f) ** 2
-    Math.sqrt(squared_lat + squared_lng)
+    squared_lon = (coords[1] - crime.x.to_f) ** 2
+    Math.sqrt(squared_lat + squared_lon)
   end
 
   def return_safest_route(ranked_routes)

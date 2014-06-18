@@ -62,7 +62,7 @@ class Direction
 
   def print_waypoints(waypoints)
     waypoints.each do |waypoint|
-      puts "#{waypoint[:lat]}, #{waypoint[:lng]}"
+      puts "#{waypoint[:lat]}, #{waypoint[:lon]}"
     end
   end
 end
