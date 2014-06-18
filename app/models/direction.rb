@@ -1,7 +1,7 @@
 class Direction
   def initialize(args)
-    @start_point = args["start_point"]
-    @end_point = args["end_point"]
+    @start_point = args["origin"]
+    @end_point = args["destination"]
     @maps_client = GoogleMapsClient.new
   end
 
@@ -47,7 +47,7 @@ class Direction
 
   def print_waypoints(waypoints)
     waypoints.each do |waypoint|
-      puts "#{waypoint[:lat]}, #{waypoint[:lng]}"
+      puts "#{waypoint[:lat]}, #{waypoint[:lon]}"
     end
   end
 end

@@ -48,8 +48,8 @@ class RouteSafetyChecker
 
   def distance_between_nodes(coords, crime)
     squared_lat = (coords[0] - crime.y.to_f) ** 2
-    squared_lng = (coords[1] - crime.x.to_f) ** 2
-    Math.sqrt(squared_lat + squared_lng)
+    squared_lon = (coords[1] - crime.x.to_f) ** 2
+    Math.sqrt(squared_lat + squared_lon)
   end
 
   def return_safest_route(ranked_routes)
