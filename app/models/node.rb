@@ -9,4 +9,10 @@ class Node < ActiveRecord::Base
   def self.intersections
     Node.where(intersection: true)
   end
+
+  def self.distance_between_points(point1, point2)
+    squared_lat = (point1[:lat] - point2[:lat]) ** 2
+    squared_lon = (point1[:lon] - point2[:lon]) ** 2
+    Math.sqrt(squared_lat + squared_lon)
+  end
 end

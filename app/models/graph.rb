@@ -11,6 +11,14 @@ class Graph
     safest = @neo.get_shortest_weighted_path(node1, node2, relationships,
                                 weight_attr=weighting, depth=max_depth,
                                 algorithm='dijkstra').first
+    # Graph.print_path(safest)
+    Graph.return_path_points(safest)
+  end
+
+  def self.return_path_points(path)
+    nodes = path["nodes"]
+    nodes.map!{ |node_url| @neo.get_node(node_url.split('/').last) }
+    points = nodes.map{ |node| [Graph.get_lat(node), Graph.get_lon(node)] }
   end
 
   def self.update_relationship_weight(rel, coeff = 4.4011318e-05)

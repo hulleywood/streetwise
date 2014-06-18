@@ -7,62 +7,39 @@ class Direction
     geocode_endpoints
   end
 
-  def origin
-    @origin
+  def origin_node
+    @origin_node
   end
 
-  def destination
-    @destination
+  def destination_node
+    @destination_node
   end
 
-  def calc_safe_route
-    if endpoints_are_valid
-      start_time = Time.now
-      # route = get_safe_route
-      route = get_dijkstra_route
-      end_time = Time.now
-      puts "Total process took: #{end_time - start_time} seconds"
-      route
-    end
+  def gen_safe_route
+    @path_points = Graph.weighted_path(@origin_node, @destination_node)
+    @path_polyline = @maps_client.encode_polyline(@path_points)
+    { path: @path_polyline, origin: origin_address, destination: destination_address }
   end
 
   private
   def geocode_endpoints
     if @origin_address && @destination_address
-      origin_coords = @maps_client.point_geocode(@start_point)
-      destination_coords = @maps_client.point_geocode(@end_point)
+      origin_coords = @maps_client.point_geocode(@origin_address)
+      destination_coords = @maps_client.point_geocode(@destination_address)
     end
-    @origin = find_closest_node_coords(origin_coords)
-    @destination = find_closest_node_coords(destination_coords)
+    @origin_node = find_closest_node(origin_coords)
+    @destination_node = find_closest_node(destination_coords)
   end
 
-  def find_closest_node_coords(node_latlon)
-    puts node_latlon
-  end
-
-  def get_safe_route
-    initial_route_args = { start_position: @start_position,
-                            end_position: @end_position }
-    initial_route = MassDirectionGenerator.new(initial_route_args).run
-
-    waypoint_args = { start_position: @start_position, end_position: @end_position, initial_route: initial_route }
-    waypoint_generator = WaypointGenerator.new(waypoint_args)
-    waypoints = waypoint_generator.run
-    print_waypoints(waypoints)
-    mass_direction_args = { start_position: @start_position,
-                            end_position: @end_position,
-                            waypoints: waypoints }
-    possible_routes = MassDirectionGenerator.new(mass_direction_args).run
-
-    safest_route_args = { midpoint: waypoint_generator.midpoint,
-                          radius: waypoint_generator.radius,
-                          possible_routes: possible_routes }
-    safest_route = RouteSafetyChecker.new(safest_route_args).run
-  end
-
-  def print_waypoints(waypoints)
-    waypoints.each do |waypoint|
-      puts "#{waypoint[:lat]}, #{waypoint[:lon]}"
+  def find_closest_node(node_latlon)
+    nodes = Node.all.to_a
+    close_nodes = []
+    nodes.each do |node|
+      distance = Node.distance_between_points(node, node_latlon)
+      if distance < 0.0016
+        close_nodes << { node: node, distance: distance }
+      end
     end
+    close_nodes.sort_by{|node| node[:distance]}.first[:node]
   end
 end
