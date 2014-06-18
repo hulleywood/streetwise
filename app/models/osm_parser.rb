@@ -36,18 +36,7 @@ class OSMParser
     end
   end
 
-  def generate_intersections
-    # highway_nodes = return_all_highway_nodes
-    parse_nodes_in_bounds
-    format_node_set
-    p @sf_nodes.first
-    p @sf_nodes.last
-    p @sf_nodes.length
-    # return_intersections(highway_nodes)
-  end
-
   private
-
   def return_all_node_refs(way)
     nodes = return_all_nodes(way)
     nodes.map! { |node| node.first.last }
@@ -83,10 +72,6 @@ class OSMParser
     { osm_node_id: node.attributes["id"].value.to_s,
       lat: node.attributes["lat"].value.to_f,
       lon: node.attributes["lon"].value.to_f }
-  end
-
-  def return_node(node_ref)
-    @nodes.select { |node| node.attributes["id"].value.to_s == node_ref }
   end
 
   def parse_nodes_in_bounds
