@@ -1,8 +1,9 @@
 class Direction
   def initialize(args)
-    @start_point = args["start_point"]
-    @end_point = args["end_point"]
+    @origin_address = args["origin"]
+    @destination_address = args["destination"]
     @maps_client = GoogleMapsClient.new
+    geocode_endpoints
   end
 
   def calc_safe_route
@@ -16,43 +17,18 @@ class Direction
     end
   end
 
-#   def get_dijkstra_route
-    
-#   end
-
-#  1  function Dijkstra(Graph, source):
-#  2      dist[source]  := 0                     // Distance from source to source
-#  3      for each vertex v in Graph:            // Initializations
-#  4          if v ≠ source
-#  5              dist[v]  := infinity           // Unknown distance function from source to v
-#  6              previous[v]  := undefined      // Previous node in optimal path from source
-#  7          end if 
-#  8          add v to Q                         // All nodes initially in Q
-#  9      end for
-# 10      
-# 11      while Q is not empty:                  // The main loop
-# 12          u := vertex in Q with min dist[u]  // Source node in first case
-# 13          remove u from Q 
-# 14          
-# 15          for each neighbor v of u:           // where v has not yet been removed from Q.
-# 16              alt := dist[u] + length(u, v)
-# 17              if alt < dist[v]:               // A shorter path to v has been found
-# 18                  dist[v]  := alt 
-# 19                  previous[v]  := u 
-# 20              end if
-# 21          end for
-# 22      end while
-# 23      return dist[], previous[]
-# 24  end function
-
   private
-  def endpoints_are_valid
-    if @start_point && @end_point
-      @start_position = @maps_client.point_geocode(@start_point)
-      @end_position = @maps_client.point_geocode(@end_point)
+  def geocode_endpoints
+    if @origin_address && @destination_address
+      origin_coords = @maps_client.point_geocode(@start_point)
+      destination_coords = @maps_client.point_geocode(@end_point)
     end
+    @origin = find_closest_node_coords(origin_coords)
+    @destination = find_closest_node_coords(destination_coords)
+  end
 
-    !!(@start_position && @end_position)
+  def find_closest_node_coords(node_latlon)
+    puts node_latlon
   end
 
   def get_safe_route

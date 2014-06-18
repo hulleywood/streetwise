@@ -1,21 +1,21 @@
 class Graph
   @neo = Neography::Rest.new
 
-  def self.shortest_path(ar_node1, ar_node2, relationship_name, depth=Node.count)
-    puts "#{ar_node1.lat}, #{ar_node1.lon}"
-    puts "#{ar_node2.lat}, #{ar_node2.lon}"
-    relationships = {"type" => relationship_name, "direction" => "all"}
+  def self.weighted_path(ar_node1, ar_node2, weighting = "weight")
+    relationships = {"type" => 'neighbors', "direction" => "out"}
+    path_depth = Node.count
     node1 = Graph.find_by_ar_id(ar_node1.id)
     node2 = Graph.find_by_ar_id(ar_node2.id)
-    # @neo.get_path(node1, node2, relationships, depth=depth, algorithm="shortestPath")
-    @neo.get_shortest_weighted_path(node1, node2, relationships,
-                                weight_attr='distance', depth=depth,
-                                algorithm='dijkstra')
+    shortest = @neo.get_path(node1, node2, relationships, depth=path_depth, algorithm="shortestPath")
+    max_depth = (shortest["length"] * 1.25).to_i
+    safest = @neo.get_shortest_weighted_path(node1, node2, relationships,
+                                weight_attr=weighting, depth=max_depth,
+                                algorithm='dijkstra').first
   end
 
-  def self.get_distance_info
-    rels = Graph.all_relationships
-    p rels.length
+  def self.update_relationship_weight(rel, coeff = 4.4011318e-05)
+    weight = rel["data"]["distance"] + coeff * rel["data"]["crime_rating"]
+    @neo.set_relationship_properties(rel, {"weight" => weight})
   end
 
   def self.create_node(ar_node)
@@ -54,8 +54,8 @@ class Graph
 
     unless Graph.relationship_exists(graph_node, neighbor_node, 'neighbors')
       rel = @neo.create_relationship("neighbors", graph_node, neighbor_node)
-      distance = Graph.get_node_distance(graph_node, neighbor_node)
-      crime_rating = Graph.get_crime_rating(ar_node, neighbor_ar)
+      distance = Graph.calc_node_distance(graph_node, neighbor_node)
+      crime_rating = Graph.calc_crime_rating(ar_node, neighbor_ar)
       @neo.set_relationship_properties(rel, {"distance" => distance, "crime_rating" => crime_rating})
     end
   end
@@ -84,7 +84,7 @@ class Graph
       crime_rating: ar_node.crime_rating }
   end
 
-  def self.get_node_distance(node1, node2)
+  def self.calc_node_distance(node1, node2)
     squared_lat = (Graph.get_lat(node1) - Graph.get_lat(node2)) ** 2
     squared_lon = (Graph.get_lon(node1) - Graph.get_lon(node2)) ** 2
     Math.sqrt(squared_lat + squared_lon)
@@ -98,7 +98,19 @@ class Graph
     node["data"]["lon"].to_f
   end
 
-  def self.get_crime_rating(node1, node2)
+  def self.calc_crime_rating(node1, node2)
     (node1.crime_rating + node2.crime_rating)/2
+  end
+
+  def self.print_path(path)
+    puts "-" * 80
+    path["nodes"].each do |node_url|
+      node = @neo.get_node(node_url.split('/').last)
+      Graph.print_node_position(node)
+    end
+  end
+
+  def self.print_node_position(node)
+    puts "#{Graph.get_lat(node)}, #{Graph.get_lon(node)}"
   end
 end
