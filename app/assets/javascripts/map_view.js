@@ -4,7 +4,7 @@ var MapView = function() {
   this.directionsService = new google.maps.DirectionsService();
   this.geocoder = new google.maps.Geocoder();
   this.bounds = new google.maps.LatLngBounds();
-  this.overlays = []
+  this.overlays = { markers: [], paths: [] }
 }
 
 MapView.prototype = {
@@ -43,11 +43,14 @@ MapView.prototype = {
   },
   removeOldOverlays: function() {
     this.clearMapOverlays()
-    this.overlays = []
+    this.overlays = { markers: [], paths: [] }
   },
   clearMapOverlays: function() {
-    for (var i = 0; i < this.overlays.length; i ++) {
-      this.overlays[i].setMap(null)
+    for (var i = 0; i < this.overlays.markers.length; i ++) {
+      this.overlays.markers[i].setMap(null)
+    }
+    for (var i = 0; i < this.overlays.paths.length; i ++) {
+      this.overlays.paths[i].setMap(null)
     }
   },
   addMarkerToMap: function(address, coords) {
@@ -57,7 +60,13 @@ MapView.prototype = {
         map: this.map,
         title: address
     });
-    this.overlays.push(marker)
+    this.overlays.markers.push(marker)
+  },
+  addPathsToMap: function(paths) {
+    for (var i = 0; i < paths.length; i++) {
+      this.addPathToMap(paths[i])
+    }
+    this.showMapPath(0)
   },
   addPathToMap: function(path) {
     var directionCoordinates = [];
@@ -75,8 +84,7 @@ MapView.prototype = {
       strokeOpacity: 1.0,
       strokeWeight: 2
     });
-    directionPath.setMap(this.map);
-    this.overlays.push(directionPath)
+    this.overlays.paths.push(directionPath)
   },
   reboundMap: function(coords) {
     for (var i = 0; i < coords.length; i++) {
@@ -84,5 +92,9 @@ MapView.prototype = {
           this.bounds.extend(latLon)
     }
     this.map.fitBounds(this.bounds)
+  },
+  showMapPath: function(val) {
+    var path = this.overlays.paths[val]
+    path.setMap(this.map)
   }
 }
