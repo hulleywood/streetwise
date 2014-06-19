@@ -34,6 +34,4 @@ gem 'twitter-bootstrap-rails',
 :branch => 'bootstrap3'
 gem 'uglifier', '>= 1.0.3'
 
-group :production do
-  gem 'rails_12factor'
-end
+gem 'rails_12factor'
