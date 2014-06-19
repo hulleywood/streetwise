@@ -45,7 +45,7 @@ MapView.prototype = {
 
     var height = windowHeight - otherElementsHeight - 5
 
-    $('#map-canvas').height( height );
+    $('#map-canvas').height(height)
   },
   removeOldOverlays: function() {
     this.clearMarkers()
