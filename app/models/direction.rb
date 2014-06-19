@@ -15,9 +15,9 @@ class Direction
     @destination_node
   end
 
-  def gen_safe_route
-    @path_points = Graph.weighted_path(@origin_node, @destination_node)
-    { path: @path_points, origin: @origin_address, destination: @destination_address, origin_coords: @origin_coords, destination_coords: @destination_coords }
+  def gen_paths
+    @paths = Graph.get_paths(@origin_node, @destination_node)
+    { paths: @paths, origin: @origin_address, destination: @destination_address, origin_coords: @origin_coords, destination_coords: @destination_coords }
   end
 
   private

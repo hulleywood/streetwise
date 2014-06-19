@@ -2,9 +2,9 @@ class DirectionsController < ApplicationController
   def show
     @direction = Direction.new(params)
     if valid_request
-      safe_route = @direction.gen_safe_route
+      response = @direction.gen_paths
       if safe_route
-        render json: safe_route
+        render json: response
       else
         render json: "Something went wrong, please try again", status: 422
       end

@@ -32,4 +32,7 @@ gem 'twitter-bootstrap-rails',
 :github => 'seyhunak/twitter-bootstrap-rails',
 :branch => 'bootstrap3'
 gem 'uglifier', '>= 1.0.3'
-gem 'rails_12factor'
+
+group :production do
+  gem 'rails_12factor'
+end
