@@ -9,6 +9,7 @@ Slider.prototype = {
     this.setSlider()
     $("#safer").click(function(){ this.changeSliderValue(-1) }.bind(this))
     $("#shorter").click(function(){ this.changeSliderValue(1) }.bind(this))
+    this.disable()
   },
   setSlider: function() {
     var newSlider = $("#slider").slider({
@@ -34,6 +35,9 @@ Slider.prototype = {
   },
   enable: function() {
     $('.slider-row').show()
+  },
+  disable: function() {
+    $('.slider-row').hide()
   },
   updateMap: function() {
     var value = $("#slider").slider( "option", "value" )

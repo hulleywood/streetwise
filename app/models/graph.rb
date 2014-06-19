@@ -12,7 +12,7 @@ class Graph
                 "weight_safest_18", "weight_shortest" ]
 
     weights.each do |weight|
-      paths << { "#{weight}" => Graph.get_weighted_path(node1, node2, weight) }
+      paths << Graph.get_weighted_path(node1, node2, weight)
     end
 
     paths
@@ -77,8 +77,9 @@ class Graph
   private
   def self.get_weighted_path(node1, node2, weight)
     relationships = {"type" => 'neighbors', "direction" => "out"}
+    max_depth = Node.count
     path = @neo.get_shortest_weighted_path(node1, node2, relationships,
-                                weight_attr=weight,
+                                weight_attr=weight, depth=max_depth,
                                 algorithm='dijkstra').first
     Graph.return_path_points(path)
   end

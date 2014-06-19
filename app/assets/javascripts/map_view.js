@@ -18,37 +18,46 @@ MapView.prototype = {
     this.directionsDisplay.setMap(this.map);
   },
   resize: function(){
-    var navHeight = $(".navbar").height()
+    var otherElementsHeight = 0
+
+    otherElementsHeight += $(".navbar").height()
     + parseInt($(".navbar").css("margin-bottom"))
     + parseInt($(".navbar").css("margin-top"))
 
-    var searchHeight = $(".directions-group").height()
+    otherElementsHeight += $(".directions-group").height()
     + parseInt($(".directions-group").css("margin-bottom"))
     + parseInt($(".directions-group").css("margin-top"))
 
-    var errorHeight = $("#errors").height()
-    + parseInt($("#errors").css("margin-bottom"))
-    + parseInt($("#errors").css("margin-top"))
+    if ($("#errors").is(":visible")) {
+      otherElementsHeight += $("#errors").height()
+      + parseInt($("#errors").css("margin-bottom"))
+      + parseInt($("#errors").css("margin-top"))
+    }
 
-    var sliderHeight = $(".slider-row").height()
-    + parseInt($(".slider-row").css("margin-bottom"))
-    + parseInt($(".slider-row").css("margin-top"))
+    if ($(".slider-row").is(":visible")) {
+      otherElementsHeight += $(".slider-row").height()
+      + parseInt($(".slider-row").css("margin-bottom"))
+      + parseInt($(".slider-row").css("margin-top"))
+    }
 
-    var mapMargin = parseInt($('#map-canvas').css("margin-bottom"))
+    otherElementsHeight += parseInt($('#map-canvas').css("margin-bottom"))
     var windowHeight = $(window).height()
 
-    var height = windowHeight - navHeight - searchHeight - errorHeight - mapMargin - sliderHeight - 5
+    var height = windowHeight - otherElementsHeight - 5
 
     $('#map-canvas').height( height );
   },
   removeOldOverlays: function() {
-    this.clearMapOverlays()
+    this.clearMarkers()
+    this.clearPaths()
     this.overlays = { markers: [], paths: [] }
   },
-  clearMapOverlays: function() {
+  clearMarkers: function() {
     for (var i = 0; i < this.overlays.markers.length; i ++) {
       this.overlays.markers[i].setMap(null)
     }
+  },
+  clearPaths: function() {
     for (var i = 0; i < this.overlays.paths.length; i ++) {
       this.overlays.paths[i].setMap(null)
     }
@@ -94,6 +103,7 @@ MapView.prototype = {
     this.map.fitBounds(this.bounds)
   },
   showMapPath: function(val) {
+    this.clearPaths()
     var path = this.overlays.paths[val]
     path.setMap(this.map)
   }

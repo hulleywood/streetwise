@@ -3,7 +3,7 @@ class DirectionsController < ApplicationController
     @direction = Direction.new(params)
     if valid_request
       response = @direction.gen_paths
-      if safe_route
+      if response
         render json: response
       else
         render json: "Something went wrong, please try again", status: 422

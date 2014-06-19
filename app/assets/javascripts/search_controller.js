@@ -27,6 +27,7 @@ SearchController.prototype = {
     var response = this.processForm(form)
     if (response.status === 200) {
       $(form).find('button').attr('disabled', 'disabled');
+      this.hideErrors()
       this.sendDirectionRequest(response.data)
     }
     else {
@@ -88,9 +89,17 @@ SearchController.prototype = {
     for (var i = 0; i < errors.length; i++) {
       this.showErrorMessage(errors[i])
     }
-    this.mapView.resize()
+    this.showErrors()
   },
   showErrorMessage: function(error) {
     $('#errors').append('<p>'+error+'</p>')
+  },
+  showErrors: function(){
+    $('#errors').show()
+    this.mapView.resize()
+  },
+  hideErrors: function(){
+    $('#errors').hide()
+    this.mapView.resize()
   }
 }
