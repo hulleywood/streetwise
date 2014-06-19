@@ -6,8 +6,11 @@ var SearchController = function(mapView, slider) {
 
 SearchController.prototype = {
   initialize: function() {
-    this.mapView.initialize();
-    this.bindAutocomplete();
+    this.mapView.initialize()
+    this.bindAutocomplete()
+    this.hideErrors()
+    $('#search-btn').click(this.toggleSearch.bind(this))
+    $('#about-btn').click(this.toggleAbout.bind(this))
   },
   bindAutocomplete: function() {
     var inputs = $('.directions-group input')
@@ -28,6 +31,9 @@ SearchController.prototype = {
     if (response.status === 200) {
       $(form).find('button').attr('disabled', 'disabled');
       this.hideErrors()
+      this.slider.disable()
+      this.mapView.resize()
+      $('body').addClass('loading')
       this.sendDirectionRequest(response.data)
     }
     else {
@@ -70,9 +76,11 @@ SearchController.prototype = {
     ajaxRequest.fail(this.processErrors)
   },
   processResponse: function(response) {
+    $('body').removeClass('loading')
     $('.directions-group').find('button').removeAttr('disabled');
     $('#errors').text('')
     this.slider.enable()
+    this.toggleSearch()
     this.mapView.resize()
     this.mapView.removeOldOverlays()
     this.mapView.addPathsToMap(response.paths)
@@ -81,6 +89,7 @@ SearchController.prototype = {
     this.mapView.reboundMap([response.origin_coords, response.destination_coords])
   },
   processErrors: function(response) {
+    $('body').removeClass('loading')
     $('.directions-group').find('button').removeAttr('disabled');
     this.displayErrorMessages([response.statusText])
   },
@@ -101,5 +110,12 @@ SearchController.prototype = {
   hideErrors: function(){
     $('#errors').hide()
     this.mapView.resize()
+  },
+  toggleSearch: function() {
+    $('.directions-group').toggle()
+    this.mapView.resize()
+  },
+  toggleAbout: function() {
+    setTimeout( this.mapView.resize, 300)
   }
 }
