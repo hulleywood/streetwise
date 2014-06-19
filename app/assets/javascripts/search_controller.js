@@ -32,6 +32,7 @@ SearchController.prototype = {
       this.hideErrors()
       this.slider.disable()
       this.mapView.resize()
+      $('body').addClass('loading')
       this.sendDirectionRequest(response.data)
     }
     else {
@@ -74,6 +75,7 @@ SearchController.prototype = {
     ajaxRequest.fail(this.processErrors)
   },
   processResponse: function(response) {
+    $('body').removeClass('loading')
     $('.directions-group').find('button').removeAttr('disabled');
     $('#errors').text('')
     this.slider.enable()
@@ -86,6 +88,7 @@ SearchController.prototype = {
     this.mapView.reboundMap([response.origin_coords, response.destination_coords])
   },
   processErrors: function(response) {
+    $('body').removeClass('loading')
     $('.directions-group').find('button').removeAttr('disabled');
     this.displayErrorMessages([response.statusText])
   },
