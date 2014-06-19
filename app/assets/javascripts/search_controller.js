@@ -1,27 +1,13 @@
-var SearchController = function(mapView) {
+var SearchController = function(mapView, slider) {
   this.mapView = mapView
-  this.map
-  this.directionsDisplay = new google.maps.DirectionsRenderer();
-  this.directionsService = new google.maps.DirectionsService();
-  this.geocoder = new google.maps.Geocoder();
-  this.bounds = new google.maps.LatLngBounds();
+  this.slider = slider
   this.initialize()
-  this.overlays = []
 }
 
 SearchController.prototype = {
   initialize: function() {
-    this.showInitialMap();
+    this.mapView.initialize();
     this.bindAutocomplete();
-  },
-  showInitialMap: function() {
-    var sanFran = new google.maps.LatLng(37.7833, -122.4167);
-    var mapOptions = {
-      zoom:12,
-      center: sanFran
-    }
-    this.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-    this.directionsDisplay.setMap(this.map);
   },
   bindAutocomplete: function() {
     var inputs = $('.directions-group input')
@@ -79,16 +65,19 @@ SearchController.prototype = {
       type: 'GET',
       data: data
     })
-    ajaxRequest.done(this.processDirections)
+    ajaxRequest.done(this.processResponse)
     ajaxRequest.fail(this.processErrors)
   },
-  processDirections: function(response) {
+  processResponse: function(response) {
     $('.directions-group').find('button').removeAttr('disabled');
-    this.clearMapOverlays()
-    this.addPathToMap(response.path)
-    this.addMarkerToMap(response.origin, response.origin_coords)
-    this.addMarkerToMap(response.destination, response.destination_coords)
-    this.reboundMap([response.origin_coords, response.destination_coords])
+    $('#errors').text('')
+    this.slider.enable()
+    this.mapView.resize()
+    this.mapView.clearMapOverlays()
+    this.mapView.addPathsToMap(response.paths)
+    this.mapView.addMarkerToMap(response.origin, response.origin_coords)
+    this.mapView.addMarkerToMap(response.destination, response.destination_coords)
+    this.mapView.reboundMap([response.origin_coords, response.destination_coords])
   },
   processErrors: function(response) {
     $('.directions-group').find('button').removeAttr('disabled');
@@ -99,49 +88,9 @@ SearchController.prototype = {
     for (var i = 0; i < errors.length; i++) {
       this.showErrorMessage(errors[i])
     }
-    this.mapView.resize();
+    this.mapView.resize()
   },
   showErrorMessage: function(error) {
     $('#errors').append('<p>'+error+'</p>')
-  },
-  addPathToMap: function(path) {
-    var directionCoordinates = [];
-
-    for (var i = 0; i < path.length; i++) {
-      latLon = new google.maps.LatLng(path[i][0], path[i][1])
-      directionCoordinates.push(latLon)
-      this.bounds.extend(latLon)
-    }
-
-    var directionPath = new google.maps.Polyline({
-      path: directionCoordinates,
-      geodesic: true,
-      strokeColor: '#FF0000',
-      strokeOpacity: 1.0,
-      strokeWeight: 2
-    });
-    directionPath.setMap(this.map);
-    this.overlays.push(directionPath)
-  },
-  addMarkerToMap: function(address, coords) {
-    var latLon = new google.maps.LatLng(coords.lat, coords.lon);
-    var marker = new google.maps.Marker({
-        position: latLon,
-        map: this.map,
-        title: address
-    });
-    this.overlays.push(marker)
-  },
-  reboundMap: function(coords) {
-    for (var i = 0; i < coords.length; i++) {
-          var latLon = new google.maps.LatLng(coords[i].lat, coords[i].lon)
-          this.bounds.extend(latLon)
-    }
-    this.map.fitBounds(this.bounds)
-  },
-  clearMapOverlays: function() {
-    for (var i = 0; i < this.overlays.length; i ++) {
-      this.overlays[i].setMap(null)
-    }
   }
 }

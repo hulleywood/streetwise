@@ -20,3 +20,16 @@ button.directions {
   margin: 0 15px;
   padding: 0;
 }
+
+.slider-row {
+  margin-bottom: 15px;
+}
+
+#slider {
+  margin-top: 10px;
+}
+
+.slider-row button {
+  width: 100%;
+  border-radius: 20px;
+}
