@@ -8,6 +8,7 @@ SearchController.prototype = {
   initialize: function() {
     this.mapView.initialize()
     this.bindAutocomplete()
+    this.hideErrors()
     $('#search-btn').click(this.toggleSearch.bind(this))
     $('#about-btn').click(this.toggleAbout.bind(this))
   },
