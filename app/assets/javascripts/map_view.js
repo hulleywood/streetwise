@@ -41,6 +41,10 @@ MapView.prototype = {
 
     $('#map-canvas').height( height );
   },
+  removeOldOverlays: function() {
+    this.clearMapOverlays()
+    this.overlays = []
+  },
   clearMapOverlays: function() {
     for (var i = 0; i < this.overlays.length; i ++) {
       this.overlays[i].setMap(null)

@@ -73,7 +73,7 @@ SearchController.prototype = {
     $('#errors').text('')
     this.slider.enable()
     this.mapView.resize()
-    this.mapView.clearMapOverlays()
+    this.mapView.removeOldOverlays()
     this.mapView.addPathsToMap(response.paths)
     this.mapView.addMarkerToMap(response.origin, response.origin_coords)
     this.mapView.addMarkerToMap(response.destination, response.destination_coords)
