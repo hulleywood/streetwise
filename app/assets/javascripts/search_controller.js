@@ -116,6 +116,6 @@ SearchController.prototype = {
     this.mapView.resize()
   },
   toggleAbout: function() {
-    setTimeout( this.mapView.resize, 300)
+    setTimeout( this.mapView.resize, 350)
   }
 }

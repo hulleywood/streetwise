@@ -20,33 +20,24 @@ MapView.prototype = {
   resize: function(){
     var otherElementsHeight = 0
 
-    otherElementsHeight += $(".navbar").height()
-    + parseInt($(".navbar").css("margin-bottom"))
-    + parseInt($(".navbar").css("margin-top"))
+    otherElementsHeight += $(".navbar").outerHeight(true)
 
     if ($(".directions-group").is(":visible")) {
-      otherElementsHeight += $(".directions-group").height()
-      + parseInt($(".directions-group").css("margin-bottom"))
-      + parseInt($(".directions-group").css("margin-top"))
+      otherElementsHeight += $(".directions-group").outerHeight(true)
     }
 
     if ($("#errors").is(":visible")) {
-      otherElementsHeight += $("#errors").height()
-      + parseInt($("#errors").css("margin-bottom"))
-      + parseInt($("#errors").css("margin-top"))
+      otherElementsHeight += $("#errors").outerHeight(true)
     }
 
     if ($(".slider-row").is(":visible")) {
-      otherElementsHeight += $(".slider-row").height()
-      + parseInt($(".slider-row").css("margin-bottom"))
-      + parseInt($(".slider-row").css("margin-top"))
+      otherElementsHeight += $(".slider-row").outerHeight(true)
     }
 
     otherElementsHeight += parseInt($('#map-canvas').css("margin-bottom"))
     var windowHeight = $(window).height()
 
     var height = windowHeight - otherElementsHeight - 5
-
     $('#map-canvas').height(height)
   },
   removeOldOverlays: function() {
