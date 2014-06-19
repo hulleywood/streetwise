@@ -20,3 +20,38 @@ button.directions {
   margin: 0 15px;
   padding: 0;
 }
+
+.slider-row {
+  margin-bottom: 15px;
+}
+
+#slider {
+  margin-top: 10px;
+}
+
+.slider-row button {
+  width: 100%;
+  border-radius: 20px;
+}
+
+#errors {
+  overflow: hidden;
+}
+
+@media (min-width: 1200px) {
+  #slider {
+    width: 83.33%;
+  }
+  .slider-button {
+    width: 8.333%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1200px) {
+  #slider {
+    width: 66.66%;
+  }
+  .slider-button {
+    width: 16.66%;
+  }
+}

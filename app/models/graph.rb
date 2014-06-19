@@ -3,17 +3,28 @@ class Graph
   # uri = URI.parse(neo4j_url)
   @neo = Neography::Rest.new(neo4j_url)
 
-  def self.weighted_path(ar_node1, ar_node2, weighting = "weight")
-    relationships = {"type" => 'neighbors', "direction" => "out"}
-    path_depth = Node.count
+  def self.get_paths(ar_node1, ar_node2)
     node1 = Graph.find_by_ar_id(ar_node1.id)
     node2 = Graph.find_by_ar_id(ar_node2.id)
-    shortest = @neo.get_path(node1, node2, relationships, depth=path_depth, algorithm="shortestPath")
-    max_depth = (shortest["length"] * 1.25).to_i
-    safest = @neo.get_shortest_weighted_path(node1, node2, relationships,
-                                weight_attr=weighting, depth=max_depth,
-                                algorithm='dijkstra').first
-    Graph.return_path_points(safest)
+
+    paths = []
+    weights = [ "weight_safest_12", "weight_safest_14",
+                "weight_safest_18", "weight_shortest" ]
+
+    weights.each do |weight|
+      paths << Graph.get_weighted_path(node1, node2, weight)
+    end
+
+    paths
+  end
+
+  def self.clear_relationship_weights(rel)
+    props = @neo.get_relationship_properties(rel)
+    distance = props["distance"]
+    crime_rating = props["crime_rating"]
+
+    @neo.remove_relationship_properties(rel)
+    @neo.set_relationship_properties(rel, {"distance" => distance, "crime_rating" => crime_rating})
   end
 
   def self.return_path_points(path)
@@ -22,9 +33,15 @@ class Graph
     points = nodes.map{ |node| [Graph.get_lat(node), Graph.get_lon(node)] }
   end
 
-  def self.update_relationship_weight(rel, coeff = 4.4011318e-05)
-    weight = rel["data"]["distance"] + coeff * rel["data"]["crime_rating"] / 2
-    @neo.set_relationship_properties(rel, {"weight" => weight})
+  def self.update_relationship_weights(rel, coeff = 4.4011318e-05)
+    weight_safest_12 = rel["data"]["distance"] + coeff * rel["data"]["crime_rating"]
+    weight_safest_14 = rel["data"]["distance"] + coeff * rel["data"]["crime_rating"] / 3
+    weight_safest_18 = rel["data"]["distance"] + coeff * rel["data"]["crime_rating"] / 7
+    weight_shortest = rel["data"]["distance"]
+    @neo.set_relationship_properties(rel, {"weight_safest_12" => weight_safest_12})
+    @neo.set_relationship_properties(rel, {"weight_safest_14" => weight_safest_14})
+    @neo.set_relationship_properties(rel, {"weight_safest_18" => weight_safest_18})
+    @neo.set_relationship_properties(rel, {"weight_shortest" => weight_shortest})
   end
 
   def self.create_node(ar_node)
@@ -58,6 +75,15 @@ class Graph
   end
 
   private
+  def self.get_weighted_path(node1, node2, weight)
+    relationships = {"type" => 'neighbors', "direction" => "out"}
+    max_depth = Node.count
+    path = @neo.get_shortest_weighted_path(node1, node2, relationships,
+                                weight_attr=weight, depth=max_depth,
+                                algorithm='dijkstra').first
+    Graph.return_path_points(path)
+  end
+
   def self.make_neighbor_relationship(graph_node, ar_node, neighbor_ar)
     neighbor_node = Graph.find_by_ar_id(neighbor_ar.id)
 
@@ -66,6 +92,8 @@ class Graph
       distance = Graph.calc_node_distance(graph_node, neighbor_node)
       crime_rating = Graph.calc_crime_rating(ar_node, neighbor_ar)
       @neo.set_relationship_properties(rel, {"distance" => distance, "crime_rating" => crime_rating})
+      updated_rel = @neo.get_relationship(rel)
+      Graph.update_relationship_weights(updated_rel)
     end
   end
 

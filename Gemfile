@@ -5,7 +5,8 @@ gem 'pg'
 gem 'neography'
 gem 'turbolinks'
 gem 'jbuilder', '~> 2.0'
-gem 'jquery-rails'
+gem 'jquery-rails', "~> 2.3.0"
+gem 'jquery-ui-rails'
 
 gem 'httparty'
 # gem 'dotenv-rails', :groups => [:development, :test]
@@ -32,4 +33,7 @@ gem 'twitter-bootstrap-rails',
 :github => 'seyhunak/twitter-bootstrap-rails',
 :branch => 'bootstrap3'
 gem 'uglifier', '>= 1.0.3'
-gem 'rails_12factor'
+
+group :production do
+  gem 'rails_12factor'
+end

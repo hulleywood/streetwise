@@ -40,7 +40,22 @@ namespace :graph_seed do
     puts "Updating weights for #{graph_rels.length} relationships"
 
     graph_rels.each do |rel|
-      Graph.update_relationship_weight(rel)
+      Graph.update_relationship_weights(rel)
+    end
+
+    tend = Time.now
+    puts "Time to complete: #{tend - tstart} seconds"
+  end
+
+  desc 'Clear relationship weights'
+  task clear_relationship_weights: :environment do
+    tstart = Time.now
+
+    graph_rels = Graph.all_relationships
+    puts "Clearing weights for #{graph_rels.length} relationships"
+
+    graph_rels.each do |rel|
+      Graph.clear_relationship_weights(rel)
     end
 
     tend = Time.now
