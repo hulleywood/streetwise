@@ -24,9 +24,11 @@ MapView.prototype = {
     + parseInt($(".navbar").css("margin-bottom"))
     + parseInt($(".navbar").css("margin-top"))
 
-    otherElementsHeight += $(".directions-group").height()
-    + parseInt($(".directions-group").css("margin-bottom"))
-    + parseInt($(".directions-group").css("margin-top"))
+    if ($(".directions-group").is(":visible")) {
+      otherElementsHeight += $(".directions-group").height()
+      + parseInt($(".directions-group").css("margin-bottom"))
+      + parseInt($(".directions-group").css("margin-top"))
+    }
 
     if ($("#errors").is(":visible")) {
       otherElementsHeight += $("#errors").height()
