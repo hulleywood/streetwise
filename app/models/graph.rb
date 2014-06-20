@@ -1,26 +1,26 @@
 class Graph
   neo4j_url = ENV["GRAPHENEDB_URL"] || "http://localhost:7474"
-  # uri = URI.parse(neo4j_url)
   @neo = Neography::Rest.new(neo4j_url)
 
   def self.get_paths(ar_node1, ar_node2)
-    tstart = Time.now
-    puts "starting path traversal"
     node1 = Graph.find_by_ar_id(ar_node1.id)
     node2 = Graph.find_by_ar_id(ar_node2.id)
 
-    paths = []
+    paths = {}
+    threads = []
     weights = [ "weight_safest_12", "weight_safest_14",
                 "weight_safest_18", "weight_shortest" ]
 
     weights.each do |weight|
-      paths << Graph.get_weighted_path(node1, node2, weight)
+      thr = Thread.new do
+        paths["#{weight}"] = Graph.get_weighted_path(node1, node2, weight)
+      end
+      threads << thr
     end
 
-    tend = Time.now
-    puts "Paths calculated. Total time: #{tend - tstart} seconds"
+    threads.map(&:join)
 
-    paths
+    Graph.sort_paths_by(weights, paths)
   end
 
   def self.clear_relationship_weights(rel)
@@ -154,5 +154,9 @@ class Graph
 
   def self.print_node_position(node)
     puts "#{Graph.get_lat(node)}, #{Graph.get_lon(node)}"
+  end
+
+  def self.sort_paths_by(weights, paths)
+    weights.map { |weight| paths["#{weight}"] }
   end
 end

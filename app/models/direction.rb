@@ -3,7 +3,6 @@ class Direction
   def initialize(args)
     @origin_address = args["origin"]
     @destination_address = args["destination"]
-    @maps_client = GoogleMapsClient.new
     geocode_endpoints
   end
 
