@@ -1,8 +1,12 @@
 class DirectionsController < ApplicationController
   def show
+    tstart = Time.now
     @direction = Direction.new(params)
+    puts "Initiated"
     if valid_request
       response = @direction.gen_paths
+      tend = Time.now
+      puts "Time to complete process: #{tend - tstart} seconds"
       if response
         render json: response
       else

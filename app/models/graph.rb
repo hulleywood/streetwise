@@ -4,6 +4,8 @@ class Graph
   @neo = Neography::Rest.new(neo4j_url)
 
   def self.get_paths(ar_node1, ar_node2)
+    tstart = Time.now
+    puts "starting path traversal"
     node1 = Graph.find_by_ar_id(ar_node1.id)
     node2 = Graph.find_by_ar_id(ar_node2.id)
 
@@ -14,6 +16,9 @@ class Graph
     weights.each do |weight|
       paths << Graph.get_weighted_path(node1, node2, weight)
     end
+
+    tend = Time.now
+    puts "Paths calculated. Total time: #{tend - tstart} seconds"
 
     paths
   end
