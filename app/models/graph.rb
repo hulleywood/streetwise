@@ -12,13 +12,13 @@ class Graph
                 "weight_safest_18", "weight_shortest" ]
 
     weights.each do |weight|
-      thr = Thread.new do
+      # thr = Thread.new do
         paths["#{weight}"] = Graph.get_weighted_path(node1, node2, weight)
-      end
-      threads << thr
+      # end
+      # threads << thr
     end
 
-    threads.map(&:join)
+    # threads.map(&:join)
 
     Graph.sort_paths_by(weights, paths)
   end
