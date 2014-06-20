@@ -12,6 +12,7 @@ require 'polylines'
 require 'nokogiri'
 require 'database_cleaner'
 require 'neography'
+require 'geocoder'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
