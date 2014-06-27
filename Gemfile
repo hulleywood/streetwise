@@ -36,3 +36,4 @@ gem 'twitter-bootstrap-rails',
 gem 'uglifier', '>= 1.0.3'
 
 gem 'rails_12factor'
+gem 'newrelic_rpm'
