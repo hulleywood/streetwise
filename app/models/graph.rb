@@ -3,24 +3,37 @@ class Graph
   @neo = Neography::Rest.new(neo4j_url)
 
   def self.get_paths(ar_node1, ar_node2)
+    puts "#{Time.now} Finding nodes in graph db..."
+    tstart = Time.now
+
     node1 = Graph.find_by_ar_id(ar_node1.id)
     node2 = Graph.find_by_ar_id(ar_node2.id)
+    max_depth = Node.count
+
+    puts "#{Time.now} Nodes found..."
 
     paths = {}
     threads = []
     weights = [ "weight_safest_12", "weight_safest_14",
                 "weight_safest_18", "weight_shortest" ]
 
+    puts "#{Time.now} Starting path generation..."
     weights.each do |weight|
       # thr = Thread.new do
-        paths["#{weight}"] = Graph.get_weighted_path(node1, node2, weight)
+        paths["#{weight}"] = Graph.get_weighted_path(node1, node2, weight, max_depth)
       # end
       # threads << thr
     end
 
     # threads.map(&:join)
 
-    Graph.sort_paths_by(weights, paths)
+    paths = Graph.sort_paths_by(weights, paths)
+
+    tend = Time.now
+    puts "#{Time.now} Ending path generation..."
+    puts "Total time to complete path gen: #{tend-tstart}"
+
+    paths
   end
 
   def self.clear_relationship_weights(rel)
@@ -80,13 +93,16 @@ class Graph
   end
 
   private
-  def self.get_weighted_path(node1, node2, weight)
+  def self.get_weighted_path(node1, node2, weight, max_depth)
     relationships = {"type" => 'neighbors', "direction" => "out"}
-    max_depth = Node.count
     path = @neo.get_shortest_weighted_path(node1, node2, relationships,
                                 weight_attr=weight, depth=max_depth,
                                 algorithm='dijkstra').first
-    Graph.return_path_points(path)
+
+    puts "#{Time.now} Path found, returning points..."
+    points = Graph.return_path_points(path)
+    puts "#{Time.now} Points found..."
+    points
   end
 
   def self.make_neighbor_relationship(graph_node, ar_node, neighbor_ar)
