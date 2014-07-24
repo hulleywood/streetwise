@@ -39,6 +39,14 @@ class Graph
     @neo.delete_label(node, label)
   end
 
+  def self.delete_node(node)
+    @neo.delete_node!(node)
+  end
+
+  def self.delete_relationship(relationship)
+    @neo.delete_relationship(relationship)
+  end
+
   def self.get_paths(ar_node1, ar_node2)
     puts "#{Time.now} Finding nodes in graph db..."
     tstart = Time.now

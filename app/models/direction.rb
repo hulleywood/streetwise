@@ -3,7 +3,11 @@ class Direction
   def initialize(args)
     @origin_address = args["origin"]
     @destination_address = args["destination"]
+    tstart = Time.now
+    puts "Beginning geocode"
     geocode_endpoints
+    tend = Time.now
+    puts "Geocode over. Time to complete #{tend - tstart}"
   end
 
   def origin_node
