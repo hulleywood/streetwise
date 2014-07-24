@@ -3,7 +3,11 @@ class Direction
   def initialize(args)
     @origin_address = args["origin"]
     @destination_address = args["destination"]
+    tstart = Time.now
+    puts "Beginning geocode"
     geocode_endpoints
+    tend = Time.now
+    puts "Geocode over. Time to complete #{tend - tstart}"
   end
 
   def origin_node
@@ -35,7 +39,7 @@ class Direction
   end
 
   def find_closest_node(coords)
-    close_nodes = Node.closest_nodes({ coords: coords, intersection: false })
+    close_nodes = Node.closest_nodes({ coords: coords, intersection: true })
     close_nodes.first[:node] if close_nodes.first
   end
 end

@@ -110,4 +110,34 @@ namespace :graph_seed do
     tend = Time.now
     puts "Time to complete: #{tend - tstart} seconds"
   end
+
+  desc "Remove neighbor relationships"
+  task delete_neighbor_relationships: :environment do
+    tstart = Time.now
+    rels = Graph.all_relationships
+
+    rels.each do |rel|
+      if rel["type"] == "neighbors"
+        Graph.delete_relationship(rel)
+      end
+    end
+
+    tend = Time.now
+    puts "Time to complete: #{tend - tstart} seconds"
+  end
+
+  desc "Remove non intersection nodes"
+  task delete_non_intersection_nodes: :environment do
+    tstart = Time.now
+    nodes = Graph.all_nodes
+
+    nodes.each do |node|
+      if !node["data"]["intersection"]
+        Graph.delete_node(node)
+      end
+    end
+
+    tend = Time.now
+    puts "Time to complete: #{tend - tstart} seconds"
+  end
 end
