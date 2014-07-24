@@ -61,4 +61,53 @@ namespace :graph_seed do
     tend = Time.now
     puts "Time to complete: #{tend - tstart} seconds"
   end
+
+  desc "Create intersection relationships"
+  task create_intersects_relationships: :environment do
+    tstart = Time.now
+    ints = Graph.intersections
+    new_rels = 0
+
+    properties = [  "weight_safest_12", "weight_safest_14",
+                    "weight_safest_18", "weight_shortest",
+                    "distance", "crime_rating" ]
+
+    ints.each do |int|
+      int_paths = Graph.traverse_next_ints(int)
+      int_paths.each do |path|
+        values = {}
+        properties.each do |prop|
+          values[prop] = Graph.sum_property(path, prop)
+        end
+        Graph.create_intersection_relationship(int, path["end"], values)
+        new_rels += 1
+        puts "Relationship added, total: #{new_rels}"
+      end
+    end
+
+    tend = Time.now
+    puts "Time to complete: #{tend - tstart} seconds"
+  end
+
+  desc "Add node labels to graph DB"
+  task create_node_labels: :environment do
+    tstart = Time.now
+    nodes = Graph.all_nodes
+
+    nodes.each do |node|
+      Graph.delete_label(node, "regular_node")
+
+      if node["data"]["intersection"]
+        Graph.add_label(node, "intersection")
+      else
+        Graph.add_label(node, "regular_node")
+      end
+
+      Graph.add_label(node, "street_node")
+    end
+
+    puts nodes.length
+    tend = Time.now
+    puts "Time to complete: #{tend - tstart} seconds"
+  end
 end
