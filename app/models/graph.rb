@@ -1,6 +1,9 @@
 class Graph
   neo4j_url = ENV["GRAPHENEDB_URL"] || "http://localhost:7474"
   @neo = Neography::Rest.new(neo4j_url)
+  median_crime_rating = 7.5
+  median_distance = 0.00932
+  @@coeff = median_distance/median_crime_rating
 
   def self.get_paths(ar_node1, ar_node2)
     puts "#{Time.now} Finding nodes in graph db..."
@@ -19,13 +22,8 @@ class Graph
 
     puts "#{Time.now} Starting path generation..."
     weights.each do |weight|
-      # thr = Thread.new do
-        paths["#{weight}"] = Graph.get_weighted_path(node1, node2, weight, max_depth)
-      # end
-      # threads << thr
+      paths["#{weight}"] = Graph.get_weighted_path(node1, node2, weight, max_depth)
     end
-
-    # threads.map(&:join)
 
     paths = Graph.sort_paths_by(weights, paths)
 
@@ -51,10 +49,10 @@ class Graph
     points = nodes.map{ |node| [Graph.get_lat(node), Graph.get_lon(node)] }
   end
 
-  def self.update_relationship_weights(rel, coeff = 4.4011318e-05)
-    weight_safest_12 = rel["data"]["distance"] + coeff * rel["data"]["crime_rating"]
-    weight_safest_14 = rel["data"]["distance"] + coeff * rel["data"]["crime_rating"] / 3
-    weight_safest_18 = rel["data"]["distance"] + coeff * rel["data"]["crime_rating"] / 7
+  def self.update_relationship_weights(rel)
+    weight_safest_12 = rel["data"]["distance"] + @@coeff * rel["data"]["crime_rating"]
+    weight_safest_14 = rel["data"]["distance"] + @@coeff * rel["data"]["crime_rating"] / 3
+    weight_safest_18 = rel["data"]["distance"] + @@coeff * rel["data"]["crime_rating"] / 7
     weight_shortest = rel["data"]["distance"]
     @neo.set_relationship_properties(rel, {"weight_safest_12" => weight_safest_12})
     @neo.set_relationship_properties(rel, {"weight_safest_14" => weight_safest_14})
@@ -71,6 +69,8 @@ class Graph
     @neo.add_to_index("intersection_index", "intersection", ar_node.intersection, graph_node)
     @neo.add_to_index("osm_node_id_index", "osm_node_id", ar_node.osm_node_id, graph_node)
     @neo.add_to_index("ar_node_id_index", "ar_node_id", ar_node.id, graph_node)
+    @neo.add_to_index("lat_index", "lat", ar_node.lat, graph_node)
+    @neo.add_to_index("lon_index", "lon", ar_node.lon, graph_node)
   end
 
   def self.all_relationships
@@ -90,6 +90,13 @@ class Graph
 
   def self.find_by_ar_id(ar_id)
     @neo.get_node_index("ar_node_id_index", "ar_node_id", ar_id).first
+  end
+
+  def self.distance_from_relationship(rel)
+    node1 = rel["start"]
+    node2 = rel["end"]
+
+    Graph.calc_node_distance(node1, node2)
   end
 
   private
@@ -143,9 +150,12 @@ class Graph
   end
 
   def self.calc_node_distance(node1, node2)
-    squared_lat = (Graph.get_lat(node1) - Graph.get_lat(node2)) ** 2
-    squared_lon = (Graph.get_lon(node1) - Graph.get_lon(node2)) ** 2
-    Math.sqrt(squared_lat + squared_lon)
+    node1 = @neo.get_node(node1)
+    node2 = @neo.get_node(node2)
+    conv_node1 = { lat: Graph.get_lat(node1), lon: Graph.get_lon(node1) }
+    conv_node2 = { lat: Graph.get_lat(node2), lon: Graph.get_lon(node2) }
+
+    Node.distance_between_points(conv_node1, conv_node2)
   end
 
   def self.get_lat(node)
