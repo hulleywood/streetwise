@@ -69,6 +69,8 @@ class Graph
     @neo.add_to_index("intersection_index", "intersection", ar_node.intersection, graph_node)
     @neo.add_to_index("osm_node_id_index", "osm_node_id", ar_node.osm_node_id, graph_node)
     @neo.add_to_index("ar_node_id_index", "ar_node_id", ar_node.id, graph_node)
+    @neo.add_to_index("lat_index", "lat", ar_node.lat, graph_node)
+    @neo.add_to_index("lon_index", "lon", ar_node.lon, graph_node)
   end
 
   def self.all_relationships
