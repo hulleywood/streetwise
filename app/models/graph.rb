@@ -19,6 +19,10 @@ class Graph
     end
   end
 
+  def self.get_node(node)
+    @neo.get_node(node)
+  end
+
   def self.sum_property(path, weight)
     rels = path["relationships"]
     rels.map! { |r| @neo.get_relationship(r) }
@@ -102,17 +106,17 @@ class Graph
     @neo.set_relationship_properties(rel, {"weight_shortest" => weight_shortest})
   end
 
-  def self.create_node(ar_node)
-    node_args = Graph.create_graph_args(ar_node)
+  def self.create_node(node_args)
+    # node_args = Graph.create_graph_args(ar_node)
     @neo.create_node(node_args)
   end
 
-  def self.create_node_indices(ar_node, graph_node)
-    @neo.add_to_index("intersection_index", "intersection", ar_node.intersection, graph_node)
-    @neo.add_to_index("osm_node_id_index", "osm_node_id", ar_node.osm_node_id, graph_node)
-    @neo.add_to_index("ar_node_id_index", "ar_node_id", ar_node.id, graph_node)
-    @neo.add_to_index("lat_index", "lat", ar_node.lat, graph_node)
-    @neo.add_to_index("lon_index", "lon", ar_node.lon, graph_node)
+  def self.create_node_indices(n)
+    @neo.add_to_index("intersection_index", "intersection", n["data"]["intersection"], n)
+    @neo.add_to_index("osm_node_id_index", "osm_node_id", n["data"]["osm_node_id"], n)
+    @neo.add_to_index("lat_index", "lat", n["data"]["lat"], n)
+    @neo.add_to_index("lon_index", "lon", n["data"]["lon"], n)
+    @neo.add_to_index("crime_rating_index", "crime_rating", n["data"]["crime_rating"], n)
   end
 
   def self.all_relationships
