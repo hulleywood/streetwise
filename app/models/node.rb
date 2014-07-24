@@ -58,6 +58,7 @@ class Node < ActiveRecord::Base
     y = Math.cos(theta1) * Math.cos(theta2) * Math.sin(lonDiff/2) ** 2
     z = Math.sqrt(x + y)
     hvs = 2 * rad * Math.sinh(z)
+    hvs.round(5)
   end
 
   def self.deg_to_rad(deg)
