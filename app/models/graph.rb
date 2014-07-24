@@ -5,6 +5,40 @@ class Graph
   median_distance = 0.00932
   @@coeff = median_distance/median_crime_rating
 
+  def self.traverse_next_ints(int)
+    int_paths = @neo.traverse(int, "paths",
+                      {"order" => "depth first",
+                       "uniqueness" => "node global",
+                       "relationships" => [{"type"=> "neighbors", "direction" => "all"}],
+                       "prune evaluator" => {"language" => "javascript",
+                        "body" => "(position.endNode().getProperty('intersection') == true) && (position.length() > 0)"}
+                       })
+
+    int_paths.reject do |path|
+      @neo.get_node(path["end"])["data"]["intersection"] == false
+    end
+  end
+
+  def self.sum_property(path, weight)
+    rels = path["relationships"]
+    rels.map! { |r| @neo.get_relationship(r) }
+    sum = 0
+    rels.each { |r| sum += r["data"][weight] }
+    sum
+  end
+
+  def self.intersections
+    @neo.get_nodes_labeled("intersection")
+  end
+
+  def self.add_label(node, label)
+    @neo.add_label(node, label)
+  end
+
+  def self.delete_label(node, label)
+    @neo.delete_label(node, label)
+  end
+
   def self.get_paths(ar_node1, ar_node2)
     puts "#{Time.now} Finding nodes in graph db..."
     tstart = Time.now
@@ -88,6 +122,13 @@ class Graph
     make_neighbor_relationship(graph_node, ar_node, wpt.next_node) if wpt.next_node
   end
 
+  def self.create_intersection_relationship(start_node, end_node, properties)
+    rel = @neo.create_relationship("intersects", start_node, end_node)
+    properties.each do |k, v|
+      @neo.set_relationship_properties(rel, {k => v})
+    end
+  end
+
   def self.find_by_ar_id(ar_id)
     @neo.get_node_index("ar_node_id_index", "ar_node_id", ar_id).first
   end
@@ -100,8 +141,8 @@ class Graph
   end
 
   private
-  def self.get_weighted_path(node1, node2, weight, max_depth)
-    relationships = {"type" => 'neighbors', "direction" => "out"}
+  def self.get_weighted_path(node1, node2, weight, max_depth, rel = "neighbors")
+    relationships = {"type" => rel, "direction" => "out"}
     path = @neo.get_shortest_weighted_path(node1, node2, relationships,
                                 weight_attr=weight, depth=max_depth,
                                 algorithm='dijkstra').first

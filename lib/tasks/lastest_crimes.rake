@@ -1,6 +1,6 @@
-namespace :latest_crimes do
+namespace :seed do
   desc 'connect to SFGOV api and grab last 3 months of crime data'
-  task seed: :environment do
+  task latest_crimes: :environment do
 
     tstart = Time.now
 
