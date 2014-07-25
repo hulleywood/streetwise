@@ -5,7 +5,7 @@ class Graph
   median_distance = 0.00932
   @@coeff = median_distance/median_crime_rating
 
-  def self.get_nearest_node_man(location, nodes = self.intersections)
+  def self.get_nearest_node_man(location, nodes = self.all)
     closest = nodes.first
     man = self.man_distance(location, nodes.first)
 
@@ -20,7 +20,7 @@ class Graph
     closest
   end
 
-  def self.get_nearest_node_hvs(location, nodes = self.intersections)
+  def self.get_nearest_node_hvs(location, nodes = self.all)
     closest = nodes.first
     hvs = Node.distance_between_points(location, nodes.first)
 
@@ -87,12 +87,12 @@ class Graph
     @neo.delete_relationship(relationship)
   end
 
-  def self.get_paths(node1, node2)
-  # def self.get_paths(ar_node1, ar_node2)
+  # def self.get_paths(node1, node2)
+  def self.get_paths(ar_node1, ar_node2)
     # puts "#{Time.now} Finding nodes in graph db..."
     tstart = Time.now
-    # node1 = Graph.find_by_osm_id(ar_node1.osm_node_id)
-    # node2 = Graph.find_by_osm_id(ar_node2.osm_node_id)
+    node1 = Graph.find_by_osm_id(ar_node1.osm_node_id)
+    node2 = Graph.find_by_osm_id(ar_node2.osm_node_id)
     max_depth = Node.count
 
     # puts "#{Time.now - tstart} seconds: nodes found..."
@@ -160,7 +160,7 @@ class Graph
     rels.map { |rel| rel.first }
   end
 
-  def self.all_nodes
+  def self.all
     nodes = @neo.execute_query("START nodes = node(*) RETURN nodes")["data"]
     nodes.map { |node| node.first }
   end

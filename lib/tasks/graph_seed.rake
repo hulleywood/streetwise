@@ -19,7 +19,7 @@ namespace :graph_seed do
   task create_neighbor_relationships: :environment do
     tstart = Time.now
 
-    graph_nodes = Graph.all_nodes
+    graph_nodes = Graph.all
     puts "Creating relationships for #{graph_nodes.length} nodes"
 
     graph_nodes.each do |graph_node|
@@ -92,7 +92,7 @@ namespace :graph_seed do
   desc "Add node labels to graph DB"
   task create_node_labels: :environment do
     tstart = Time.now
-    nodes = Graph.all_nodes
+    nodes = Graph.all
 
     nodes.each do |node|
 
@@ -128,7 +128,7 @@ namespace :graph_seed do
   desc "Remove non intersection nodes"
   task delete_non_intersection_nodes: :environment do
     tstart = Time.now
-    nodes = Graph.all_nodes
+    nodes = Graph.all
 
     nodes.each do |node|
       if !node["data"]["intersection"]

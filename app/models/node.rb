@@ -6,8 +6,49 @@ class Node < ActiveRecord::Base
   validates :lat, presence: true
   validates :lon, presence: true
 
+  def self.get_nearest_node_man(location, nodes = self.all)
+    closest = nodes.first
+    man = self.man_distance(location, nodes.first)
+
+    nodes.each do |n|
+      new_man = self.man_distance(location, n)
+      if new_man < man
+        man = new_man
+        closest = n
+      end
+    end
+
+    closest
+  end
+
+  def self.get_nearest_node_hvs(location, nodes = self.all)
+    closest = nodes.first
+    hvs = Node.distance_between_points(location, nodes.first)
+
+    nodes.each do |n|
+      new_hvs = Node.distance_between_points(location, n)
+      if new_hvs < hvs
+        hvs = new_hvs
+        closest = n
+      end
+    end
+
+    closest
+  end
+
+  def self.man_distance(location, node)
+    lat = (location["lat"].to_f - node["lat"].to_f).abs
+    lon = (location["lon"].to_f - node["lon"].to_f).abs
+    lat + lon
+  end
+
   def self.intersections
     Node.where(intersection: true)
+  end
+
+  def self.closest_node(args)
+    close_nodes = self.closest_nodes(args)
+    close_nodes.first[:node]
   end
 
   def self.closest_nodes(args)
@@ -32,7 +73,7 @@ class Node < ActiveRecord::Base
 
       return close_nodes.sort_by! { |node| node[:distance] }
     else
-      return self.close_nodes({ coords: coords, distance: 0.1, intersection: intersection })
+      return self.closest_nodes({ coords: coords, distance: 0.1, intersection: intersection })
     end
   end
 
