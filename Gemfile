@@ -6,7 +6,7 @@ gem 'neography'
 gem 'turbolinks'
 gem 'jbuilder', '~> 2.0'
 gem 'jquery-rails', "~> 2.3.0"
-gem 'jquery-ui-rails'
+gem 'jquery-ui-rails', "~> 4.2.1"
 
 gem 'httparty'
 # gem 'dotenv-rails', :groups => [:development, :test]
