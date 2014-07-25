@@ -5,6 +5,42 @@ class Graph
   median_distance = 0.00932
   @@coeff = median_distance/median_crime_rating
 
+  def self.get_nearest_node_man(location, nodes = self.intersections)
+    closest = nodes.first
+    man = self.man_distance(location, nodes.first)
+
+    nodes.each do |n|
+      new_man = self.man_distance(location, n)
+      if new_man < man
+        man = new_man
+        closest = n
+      end
+    end
+
+    closest
+  end
+
+  def self.get_nearest_node_hvs(location, nodes = self.intersections)
+    closest = nodes.first
+    hvs = Node.distance_between_points(location, nodes.first)
+
+    nodes.each do |n|
+      new_hvs = Node.distance_between_points(location, n["data"])
+      if new_hvs < hvs
+        hvs = new_hvs
+        closest = n
+      end
+    end
+
+    closest
+  end
+
+  def self.man_distance(location, node)
+    lat = (location["lat"].to_f - node["data"]["lat"].to_f).abs
+    lon = (location["lon"].to_f - node["data"]["lon"].to_f).abs
+    lat + lon
+  end
+
   def self.traverse_next_ints(int)
     int_paths = @neo.traverse(int, "paths",
                       {"order" => "depth first",
@@ -51,15 +87,15 @@ class Graph
     @neo.delete_relationship(relationship)
   end
 
-  def self.get_paths(ar_node1, ar_node2)
-    puts "#{Time.now} Finding nodes in graph db..."
+  def self.get_paths(node1, node2)
+  # def self.get_paths(ar_node1, ar_node2)
+    # puts "#{Time.now} Finding nodes in graph db..."
     tstart = Time.now
-
-    node1 = Graph.find_by_osm_id(ar_node1.osm_node_id)
-    node2 = Graph.find_by_osm_id(ar_node2.osm_node_id)
+    # node1 = Graph.find_by_osm_id(ar_node1.osm_node_id)
+    # node2 = Graph.find_by_osm_id(ar_node2.osm_node_id)
     max_depth = Node.count
 
-    puts "#{Time.now - tstart} seconds: nodes found..."
+    # puts "#{Time.now - tstart} seconds: nodes found..."
 
     paths = {}
     threads = []
