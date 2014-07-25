@@ -77,10 +77,13 @@ SearchController.prototype = {
   },
 
   validateForm: function(form) {
-    if (form.find('#origin').val() == "" || form.find('#destination').val() != "") {
+    if (form.find('#origin').val() === "" || form.find('#destination').val() === "") {
       return 422
     }
-    if (!this.originCoords && !this.destinationCoords) {
+    if (!this.originCoords) {
+      return 400
+    }
+    if (!this.destinationCoords) {
       return 400
     }
     if (this.originCoords.k > this.sfMaxLat || this.originCoords.k < this.sfMinLat) {
@@ -95,12 +98,13 @@ SearchController.prototype = {
     if (this.destinationCoords.B > this.sfMaxLon || this.destinationCoords.B < this.sfMinLon) {
       return 406
     }
+    return 200
   },
 
   getRequestData: function() {
     var origin = { lat: this.originCoords.k, lon: this.originCoords.B }
     var destination = { lat: this.destinationCoords.k, lon: this.destinationCoords.B }
-    return { origin: origin, destination: destination }
+    return { requestCoords: { origin: origin, destination: destination } }
   },
 
   sendDirectionRequest: function(data) {
