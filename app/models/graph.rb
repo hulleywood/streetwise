@@ -19,6 +19,10 @@ class Graph
     end
   end
 
+  def self.get_node(node)
+    @neo.get_node(node)
+  end
+
   def self.sum_property(path, weight)
     rels = path["relationships"]
     rels.map! { |r| @neo.get_relationship(r) }
@@ -51,18 +55,18 @@ class Graph
     puts "#{Time.now} Finding nodes in graph db..."
     tstart = Time.now
 
-    node1 = Graph.find_by_ar_id(ar_node1.id)
-    node2 = Graph.find_by_ar_id(ar_node2.id)
+    node1 = Graph.find_by_osm_id(ar_node1.osm_node_id)
+    node2 = Graph.find_by_osm_id(ar_node2.osm_node_id)
     max_depth = Node.count
 
-    puts "#{Time.now} Nodes found..."
+    puts "#{Time.now - tstart} seconds: nodes found..."
 
     paths = {}
     threads = []
     weights = [ "weight_safest_12", "weight_safest_14",
                 "weight_safest_18", "weight_shortest" ]
 
-    puts "#{Time.now} Starting path generation..."
+    puts "#{Time.now - tstart} seconds: starting path generation..."
     weights.each do |weight|
       paths["#{weight}"] = Graph.get_weighted_path(node1, node2, weight, max_depth, "intersects")
     end
@@ -102,17 +106,17 @@ class Graph
     @neo.set_relationship_properties(rel, {"weight_shortest" => weight_shortest})
   end
 
-  def self.create_node(ar_node)
-    node_args = Graph.create_graph_args(ar_node)
+  def self.create_node(node_args)
+    # node_args = Graph.create_graph_args(ar_node)
     @neo.create_node(node_args)
   end
 
-  def self.create_node_indices(ar_node, graph_node)
-    @neo.add_to_index("intersection_index", "intersection", ar_node.intersection, graph_node)
-    @neo.add_to_index("osm_node_id_index", "osm_node_id", ar_node.osm_node_id, graph_node)
-    @neo.add_to_index("ar_node_id_index", "ar_node_id", ar_node.id, graph_node)
-    @neo.add_to_index("lat_index", "lat", ar_node.lat, graph_node)
-    @neo.add_to_index("lon_index", "lon", ar_node.lon, graph_node)
+  def self.create_node_indices(n)
+    @neo.add_to_index("intersection_index", "intersection", n["data"]["intersection"], n)
+    @neo.add_to_index("osm_node_id_index", "osm_node_id", n["data"]["osm_node_id"], n)
+    @neo.add_to_index("lat_index", "lat", n["data"]["lat"], n)
+    @neo.add_to_index("lon_index", "lon", n["data"]["lon"], n)
+    @neo.add_to_index("crime_rating_index", "crime_rating", n["data"]["crime_rating"], n)
   end
 
   def self.all_relationships
@@ -135,6 +139,10 @@ class Graph
     properties.each do |k, v|
       @neo.set_relationship_properties(rel, {k => v})
     end
+  end
+
+  def self.find_by_osm_id(osm_id)
+    @neo.get_node_index("osm_node_id_index", "osm_node_id", osm_id).first
   end
 
   def self.find_by_ar_id(ar_id)
