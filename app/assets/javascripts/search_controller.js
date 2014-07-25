@@ -2,8 +2,8 @@ var SearchController = function(mapView, slider) {
   this.mapView = mapView;
   this.slider = slider;
   this.initialize();
-  this.originCoords;
-  this.destinationCoords;
+  this.originPlace;
+  this.destPlace;
   this.sfMinLat = 37.696132;
   this.sfMaxLat = 37.810234;
   this.sfMinLon = -122.519413;
@@ -34,10 +34,10 @@ SearchController.prototype = {
     this.autocomplete_end = new google.maps.places.Autocomplete(inputs[1], options);
 
     google.maps.event.addListener(this.autocomplete_start, 'place_changed', function() {
-      this.originCoords = this.autocomplete_start.getPlace().geometry.location;
+      this.originPlace = this.autocomplete_start.getPlace();
     }.bind(this));
     google.maps.event.addListener(this.autocomplete_end, 'place_changed', function() {
-      this.destinationCoords = this.autocomplete_end.getPlace().geometry.location;
+      this.destPlace = this.autocomplete_end.getPlace();
     }.bind(this));
   },
 
@@ -80,31 +80,36 @@ SearchController.prototype = {
     if (form.find('#origin').val() === "" || form.find('#destination').val() === "") {
       return 422
     }
-    if (!this.originCoords) {
+    if (!this.originPlace) {
       return 400
     }
-    if (!this.destinationCoords) {
+    if (!this.destPlace) {
       return 400
     }
-    if (this.originCoords.k > this.sfMaxLat || this.originCoords.k < this.sfMinLat) {
+    if (this.originPlace.geometry.location.k > this.sfMaxLat || this.originPlace.geometry.location.k < this.sfMinLat) {
       return 406
     }
-    if (this.originCoords.B > this.sfMaxLon || this.originCoords.B < this.sfMinLon) {
+    if (this.originPlace.geometry.location.B > this.sfMaxLon || this.originPlace.geometry.location.B < this.sfMinLon) {
       return 406
     }
-    if (this.destinationCoords.k > this.sfMaxLat || this.destinationCoords.k < this.sfMinLat) {
+    if (this.destPlace.geometry.location.k > this.sfMaxLat || this.destPlace.geometry.location.k < this.sfMinLat) {
       return 406
     }
-    if (this.destinationCoords.B > this.sfMaxLon || this.destinationCoords.B < this.sfMinLon) {
+    if (this.destPlace.geometry.location.B > this.sfMaxLon || this.destPlace.geometry.location.B < this.sfMinLon) {
       return 406
     }
     return 200
   },
 
   getRequestData: function() {
-    var origin = { lat: this.originCoords.k, lon: this.originCoords.B }
-    var destination = { lat: this.destinationCoords.k, lon: this.destinationCoords.B }
-    return { requestCoords: { origin: origin, destination: destination } }
+    var originCoords = {  lat: this.originPlace.geometry.location.k,
+                          lon: this.originPlace.geometry.location.B }
+    var destCoords = {  lat: this.destPlace.geometry.location.k,
+                        lon: this.destPlace.geometry.location.B }
+    req = { coords: { origin: originCoords, destination: destCoords },
+            addresses: {  origin: this.originPlace.formatted_address,
+                          destination: this.destPlace.formatted_address } }
+    return req
   },
 
   sendDirectionRequest: function(data) {

@@ -20,8 +20,8 @@ class Node < ActiveRecord::Base
     coords = args[:coords]
     distance = args[:distance] || 0.002
 
-    lat_range = self.coord_range(coords["lat"], distance)
-    lon_range = self.coord_range(coords["lon"], distance)
+    lat_range = self.coord_range(coords["lat"].to_f, distance)
+    lon_range = self.coord_range(coords["lon"].to_f, distance)
 
     close_nodes = self.where( lat: lat_range,
                               lon: lon_range,
