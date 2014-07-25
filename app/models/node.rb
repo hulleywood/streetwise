@@ -6,68 +6,30 @@ class Node < ActiveRecord::Base
   validates :lat, presence: true
   validates :lon, presence: true
 
-  def self.get_nearest_node_man(location, nodes = self.all)
-    closest = nodes.first
-    man = self.man_distance(location, nodes.first)
-
-    nodes.each do |n|
-      new_man = self.man_distance(location, n)
-      if new_man < man
-        man = new_man
-        closest = n
-      end
-    end
-
-    closest
-  end
-
-  def self.get_nearest_node_hvs(location, nodes = self.all)
-    closest = nodes.first
-    hvs = Node.distance_between_points(location, nodes.first)
-
-    nodes.each do |n|
-      new_hvs = Node.distance_between_points(location, n)
-      if new_hvs < hvs
-        hvs = new_hvs
-        closest = n
-      end
-    end
-
-    closest
-  end
-
-  def self.man_distance(location, node)
-    lat = (location["lat"].to_f - node["lat"].to_f).abs
-    lon = (location["lon"].to_f - node["lon"].to_f).abs
-    lat + lon
-  end
-
   def self.intersections
     Node.where(intersection: true)
   end
 
-  def self.closest_node(args)
-    close_nodes = self.closest_nodes(args)
+  def self.closest_node(coords)
+    close_nodes = self.closest_nodes(coords)
     close_nodes.first[:node]
   end
 
+  private
   def self.closest_nodes(args)
     coords = args[:coords]
     distance = args[:distance] || 0.002
-    intersection = args[:intersection]
 
-    lat_range = Node.coord_range(coords["lat"], distance)
-    lon_range = Node.coord_range(coords["lon"], distance)
+    lat_range = self.coord_range(coords["lat"], distance)
+    lon_range = self.coord_range(coords["lon"], distance)
 
-    if intersection
-      close_nodes = Node.where(lat: lat_range, lon: lon_range, intersection: intersection).to_a
-    else
-      close_nodes = Node.where(lat: lat_range, lon: lon_range).to_a
-    end
+    close_nodes = self.where( lat: lat_range,
+                              lon: lon_range,
+                              intersection: true).to_a
 
     if close_nodes.length > 0
       close_nodes.map! do |node|
-        distance_to = Node.distance_between_points(node, coords)
+        distance_to = self.point_distance_hvs(node, coords)
         { node: node, distance: distance_to }
       end
 
@@ -85,7 +47,7 @@ class Node < ActiveRecord::Base
     end
   end
 
-  def self.distance_between_points(point1, point2)
+  def self.point_distance_hvs(point1, point2)
     rad = 3959
     theta1 = self.deg_to_rad(point1["lat"].to_f)
     theta2 = self.deg_to_rad(point2["lat"].to_f)
