@@ -55,18 +55,18 @@ class Graph
     puts "#{Time.now} Finding nodes in graph db..."
     tstart = Time.now
 
-    node1 = Graph.find_by_ar_id(ar_node1.id)
-    node2 = Graph.find_by_ar_id(ar_node2.id)
+    node1 = Graph.find_by_osm_id(ar_node1.osm_node_id)
+    node2 = Graph.find_by_osm_id(ar_node2.osm_node_id)
     max_depth = Node.count
 
-    puts "#{Time.now} Nodes found..."
+    puts "#{Time.now - tstart} seconds: nodes found..."
 
     paths = {}
     threads = []
     weights = [ "weight_safest_12", "weight_safest_14",
                 "weight_safest_18", "weight_shortest" ]
 
-    puts "#{Time.now} Starting path generation..."
+    puts "#{Time.now - tstart} seconds: starting path generation..."
     weights.each do |weight|
       paths["#{weight}"] = Graph.get_weighted_path(node1, node2, weight, max_depth, "intersects")
     end
@@ -139,6 +139,10 @@ class Graph
     properties.each do |k, v|
       @neo.set_relationship_properties(rel, {k => v})
     end
+  end
+
+  def self.find_by_osm_id(osm_id)
+    @neo.get_node_index("osm_node_id_index", "osm_node_id", osm_id).first
   end
 
   def self.find_by_ar_id(ar_id)

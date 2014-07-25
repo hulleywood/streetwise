@@ -95,7 +95,6 @@ namespace :graph_seed do
     nodes = Graph.all_nodes
 
     nodes.each do |node|
-      Graph.delete_label(node, "regular_node")
 
       if node["data"]["intersection"]
         Graph.add_label(node, "intersection")
@@ -162,7 +161,7 @@ namespace :graph_seed do
     end
 
     Dir.chdir('./lib/assets')
-    file = File.join( Dir.pwd, '/graph_intersects_data.csv')
+    file = File.join( Dir.pwd, '/graph_intersects_rels.csv')
     headers = [ 'crime_rating',
                 'distance',
                 "weight_safest_12",
@@ -227,7 +226,29 @@ namespace :graph_seed do
 
     array_of_hashes.each do |args|
       graph_node = Graph.create_node(args)
-      Graph.create_node_indices(ar_node, graph_node)
+      Graph.create_node_indices(graph_node)
+    end
+
+    tend = Time.now
+    puts "Time to complete: #{tend - tstart} seconds"
+  end
+
+  desc "Create graph relationships from csv"
+  task create_relationships_from_csv: :environment do
+    tstart = Time.now
+    Dir.chdir('./lib/assets')
+    file = File.join( Dir.pwd, '/graph_intersects_rels.csv')
+
+    csv_data = CSV.read(file)
+    headers = csv_data.shift
+
+    string_data = csv_data.map {|row| row.map {|cell| cell.to_s } }
+    array_of_hashes = string_data.map {|row| Hash[*headers.zip(row).flatten] }
+
+    array_of_hashes.each do |args|
+      start_node = Graph.find_by_osm_id(args["osm_start_id"])
+      end_node = Graph.find_by_osm_id(args["osm_end_id"])
+      rel = Graph.create_intersection_relationship(start_node, end_node, args)
     end
 
     tend = Time.now
