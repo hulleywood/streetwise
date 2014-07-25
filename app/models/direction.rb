@@ -30,7 +30,7 @@ class Direction
       @destination_coords = point_geocode(@destination_address)
     end
 
-    nodes = Graph.intersections
+    nodes = Graph.all_nodes
     @origin_node = Graph.get_nearest_node_man(@origin_coords, nodes)
     @destination_node = Graph.get_nearest_node_man(@destination_coords, nodes)
     # @origin_node = find_closest_node(@origin_coords)

@@ -57,7 +57,12 @@ namespace :distance_opt do
     tstart = Time.now
       nodes = Graph.intersections
     tend = Time.now
-    puts "Total time graph: #{tend - tstart}"
+    puts "Total time graph(int): #{tend - tstart}"
+
+    tstart = Time.now
+      nodes = Graph.all_nodes
+    tend = Time.now
+    puts "Total time graph (all): #{tend - tstart}"
 
     tstart = Time.now
       nodes = Node.all.to_a
