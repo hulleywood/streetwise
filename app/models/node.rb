@@ -46,24 +46,21 @@ class Node < ActiveRecord::Base
     Node.where(intersection: true)
   end
 
-  def self.closest_node(args)
-    close_nodes = self.closest_nodes(args)
+  def self.closest_node(coords)
+    close_nodes = self.closest_nodes(coords)
     close_nodes.first[:node]
   end
 
   def self.closest_nodes(args)
     coords = args[:coords]
     distance = args[:distance] || 0.002
-    intersection = args[:intersection]
 
     lat_range = Node.coord_range(coords["lat"], distance)
     lon_range = Node.coord_range(coords["lon"], distance)
 
-    if intersection
-      close_nodes = Node.where(lat: lat_range, lon: lon_range, intersection: intersection).to_a
-    else
-      close_nodes = Node.where(lat: lat_range, lon: lon_range).to_a
-    end
+    close_nodes = Node.where( lat: lat_range,
+                              lon: lon_range,
+                              intersection: true).to_a
 
     if close_nodes.length > 0
       close_nodes.map! do |node|
