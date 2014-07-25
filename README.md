@@ -13,10 +13,12 @@ Coming soon, [StreetWise iOS!](https://github.com/jhulley/StreetWiseiOS)
 
 Streetwise utlizes Neo4j (a graph database) because of it's built-in path traversal capabilities. The graph is a series of nodes connected by relationships that have weight properties (i.e. safest, shortest, etc). The weight of a relationship is the normalized crime rating, or the number of crimes recently committed near a node, multiplied by a coefficient, determined by the median crime rating and distance, and added to the distance between it's endpoints.
 
-The current version of StreetWise selects the nearest nodes to the address of the origin and destination then traverses the graph for each weighting using the nodes as endpoints. In an effort to increase the speed of traversal, intersection relationships are currently being added to the database and the traversal will use that relationship. There are approx 67,000 normal nodes in the database and only 16,000 of them are intersections.
+Streetwise uses the coordinates of the origin and destination from the request object to find the closest intersection node (done with a combo of Manhattan Distances and Haversine) then traverses the graph for each weighting using the nodes as endpoints. Geocoding is done client-side because the coordinates are already in the Google Places response object due to the use of AutoComplete.
 
 
 ##Installation
+
+__Updates Coming Soon__
 
 [Setup Neo4j](http://www.neo4j.org/download)
 
@@ -67,20 +69,12 @@ rake graph_seed:create_intersects_relationships   #6400 seconds
 
 ##Current WIP
 * Test Suite
-* Back-end rewrite to search intersection-intersection instead of node-node
-* Client-side updates (i.e. slider default position, request data structure)
-* GraphDB traversal speed
-* Overall performance optimization
-* Some iOS support modifications to the response data structure
 
 
 ##Future Improvements
 * Reduce coupling between models
-* Revise methods used in Rake tasks
 * Polyline encoding server-side
-* Rewrite closest node methods to use neo instead of PG
 * Provide actual directions instead of just view of polyline with endpoints
-* Some resultant paths link roads that cannot be traversed, need to determine cause
 * Examine crimes, potentially filter or weight (i.e. murder/mugging worse than jaywalking)
 * Allow intersection searching, not just places
 * Recenter map on User's location if in SF

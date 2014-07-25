@@ -7,7 +7,6 @@ gem 'turbolinks'
 gem 'jbuilder', '~> 2.0'
 gem 'jquery-rails', "~> 2.3.0"
 gem 'jquery-ui-rails'
-gem 'geocoder'
 
 gem 'httparty'
 # gem 'dotenv-rails', :groups => [:development, :test]
@@ -23,9 +22,7 @@ end
 group :test  do
   gem 'shoulda-matchers'
   gem 'factory_girl_rails'
-  # gem 'faker'
   gem 'capybara'
-  # gem 'selenium-webdriver'
 end
 
 gem 'therubyracer'
