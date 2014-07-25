@@ -15,8 +15,8 @@ class Node < ActiveRecord::Base
     distance = args[:distance] || 0.002
     intersection = args[:intersection]
 
-    lat_range = Node.coord_range(coords[:lat], distance)
-    lon_range = Node.coord_range(coords[:lon], distance)
+    lat_range = Node.coord_range(coords["lat"], distance)
+    lon_range = Node.coord_range(coords["lon"], distance)
 
     if intersection
       close_nodes = Node.where(lat: lat_range, lon: lon_range, intersection: intersection).to_a
@@ -46,10 +46,10 @@ class Node < ActiveRecord::Base
 
   def self.distance_between_points(point1, point2)
     rad = 3959
-    theta1 = self.deg_to_rad(point1[:lat].to_f)
-    theta2 = self.deg_to_rad(point2[:lat].to_f)
-    lam1 = self.deg_to_rad(point1[:lon].to_f)
-    lam2 = self.deg_to_rad(point2[:lon].to_f)
+    theta1 = self.deg_to_rad(point1["lat"].to_f)
+    theta2 = self.deg_to_rad(point2["lat"].to_f)
+    lam1 = self.deg_to_rad(point1["lon"].to_f)
+    lam2 = self.deg_to_rad(point2["lon"].to_f)
 
     latDiff = theta2 - theta1
     lonDiff = lam2 - lam1
