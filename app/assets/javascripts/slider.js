@@ -21,6 +21,9 @@ Slider.prototype = {
       }.bind(this)
     });
   },
+  sliderInitialPosition: function() {
+    $("#slider").slider( "option", "value", 0 )
+  },
   changeSliderValue: function(times) {
     var value = $("#slider").slider( "option", "value" )
     var change = this.step_size * times

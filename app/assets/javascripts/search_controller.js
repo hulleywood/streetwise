@@ -80,6 +80,7 @@ SearchController.prototype = {
     $('.directions-group').find('button').removeAttr('disabled');
     $('#errors').text('')
     this.slider.enable()
+    this.slider.sliderInitialPosition()
     this.toggleSearch()
     this.mapView.resize()
     this.mapView.removeOldOverlays()
