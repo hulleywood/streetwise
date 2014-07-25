@@ -4,6 +4,7 @@ class DirectionsController < ApplicationController
     puts "#{Time.now} Starting request on server..."
     @direction = Direction.new(params)
     puts "#{Time.now} Direction instance created..."
+
     if valid_request
       response = @direction.gen_paths
       if response
