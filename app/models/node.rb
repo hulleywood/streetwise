@@ -6,10 +6,6 @@ class Node < ActiveRecord::Base
   validates :lat, presence: true
   validates :lon, presence: true
 
-  def self.intersections
-    Node.where(intersection: true)
-  end
-
   def self.closest_node(coords)
     close_nodes = self.closest_nodes(coords)
     close_nodes.first[:node]
@@ -35,7 +31,7 @@ class Node < ActiveRecord::Base
 
       return close_nodes.sort_by! { |node| node[:distance] }
     else
-      return self.closest_nodes({ coords: coords, distance: 0.1, intersection: intersection })
+      return self.closest_nodes({ coords: coords, distance: 0.1, intersection: true })
     end
   end
 
