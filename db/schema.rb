@@ -46,7 +46,8 @@ ActiveRecord::Schema.define(version: 20140826042746) do
   add_index "nodes", ["osm_node_id"], name: "index_nodes_on_osm_node_id", using: :btree
 
   create_table "relationships", force: true do |t|
-    t.integer "node_id"
+    t.integer "start_node_id"
+    t.integer "end_node_id"
     t.decimal "crime_rating"
     t.decimal "distance"
     t.decimal "gradient"
