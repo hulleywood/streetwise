@@ -9,7 +9,7 @@ class CreateRelationships < ActiveRecord::Migration
       t.decimal :weight_safest_12
       t.decimal :weight_safest_14
       t.decimal :weight_safest_18
-      t.decimal :weight_shortest
+      t.decimal :weight_shortestr
     end
   end
 end

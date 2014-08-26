@@ -10,6 +10,7 @@ gem 'jquery-ui-rails', "~> 4.2.1"
 
 gem 'httparty'
 # gem 'dotenv-rails', :groups => [:development, :test]
+gem 'geocoder'
 gem 'soda-ruby', :require => 'soda'
 gem 'polylines'
 gem 'nokogiri'

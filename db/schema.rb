@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140606072411) do
+ActiveRecord::Schema.define(version: 20140826042746) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -40,9 +40,21 @@ ActiveRecord::Schema.define(version: 20140606072411) do
     t.float    "crime_rating", default: 0.0
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.decimal  "elevation"
   end
 
   add_index "nodes", ["osm_node_id"], name: "index_nodes_on_osm_node_id", using: :btree
+
+  create_table "relationships", force: true do |t|
+    t.integer "node_id"
+    t.decimal "crime_rating"
+    t.decimal "distance"
+    t.decimal "gradient"
+    t.decimal "weight_safest_12"
+    t.decimal "weight_safest_14"
+    t.decimal "weight_safest_18"
+    t.decimal "weight_shortest"
+  end
 
   create_table "waypoints", force: true do |t|
     t.string   "osm_node_id"
