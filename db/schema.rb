@@ -48,6 +48,7 @@ ActiveRecord::Schema.define(version: 20140826042746) do
   create_table "relationships", force: true do |t|
     t.integer "start_node_id"
     t.integer "end_node_id"
+    t.integer "node_id"
     t.decimal "crime_rating"
     t.decimal "distance"
     t.decimal "gradient"

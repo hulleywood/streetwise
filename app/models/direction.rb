@@ -2,11 +2,13 @@ class Direction
   def initialize(args)
     @origin_address = args["addresses"]["origin"]
     @destination_address = args["addresses"]["destination"]
+    @graph = RelationalGraph.new()
     find_endpoint_nodes(args["coords"])
   end
 
   def gen_paths
-    @paths = Graph.get_paths(@origin_node, @destination_node)
+    # @paths = Graph.get_paths(@origin_node, @destination_node)
+    @paths = @graph.get_paths(@origin_node, @destination_node)
     { paths: @paths, origin: @origin_address, destination: @destination_address, origin_coords: @origin_coords, destination_coords: @destination_coords }
   end
 

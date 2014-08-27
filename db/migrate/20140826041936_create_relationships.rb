@@ -1,8 +1,9 @@
 class CreateRelationships < ActiveRecord::Migration
   def change
     create_table :relationships do |t|
-      t.belongs_to :start_node, class_name: 'Node'
-      t.belongs_to :end_node, class_name: 'Node'
+      t.belongs_to :start_node, class_name: 'Node', foreign_key: 'node_id'
+      t.belongs_to :end_node, class_name: 'Node', foreign_key: 'node_id'
+      t.belongs_to :node
       t.decimal :crime_rating
       t.decimal :distance
       t.decimal :gradient

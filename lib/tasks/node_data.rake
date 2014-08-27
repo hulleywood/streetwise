@@ -17,11 +17,12 @@ namespace :node_data do
 
       if parsed["results"] && parsed["results"].length > 0
         group.each_with_index do |n, i|
-          elevation = parsed["results"][i]["elevation"].to_f.round(2)
-          n.elevation = elevation if elevation
+          elevation = parsed["results"][i]["elevation"].to_f
+          n.elevation = meters_to_miles(elevation) if elevation
           n.save
         end
       end
+      sleep(1.1)
     end
 
     tend = Time.now
@@ -48,4 +49,34 @@ namespace :node_data do
     tend = Time.now
     puts "Total time to complete: #{tend - tstart} seconds"
   end
+
+  desc 'Convert elevation to miles'
+  task meters_to_miles: :environment do
+    nodes = Node.all.to_a
+
+    nodes.each do |n|
+      if n.elevation
+        n.elevation = meters_to_miles(n.elevation)
+        n.save
+      end
+    end
+  end
+
+  desc 'Add gradient to relationships'
+  task gradient_to_rels: :environment do
+    rels = Relationship.all
+
+    rels.each do |r|
+      rise = (r.start_node.elevation - r.end_node.elevation).abs
+      run = r.distance
+      slope = rise/run
+      grad = (slope**2)*run
+      r.gradient = grad
+      r.save
+    end
+  end
+end
+
+def meters_to_miles(meters)
+  ((meters * 3.28084)/5280.0).round(5)
 end
