@@ -19,6 +19,7 @@ class Node < ActiveRecord::Base
   def self.closest_nodes(args)
     coords = args[:coords]
     distance = args[:distance] || 0.002
+    intersection = args[:intersection]
 
     lat_range = self.coord_range(coords["lat"].to_f, distance)
     lon_range = self.coord_range(coords["lon"].to_f, distance)
