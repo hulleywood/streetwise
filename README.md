@@ -53,7 +53,7 @@ Seed the database (note: these tasks take a very long time to run, like hours an
 rake seed:latest_crimes                           #700 seconds, requires API key for SFGov Data
 
 rake osm_data_creation:create_sf_nodes            #1200 seconds, requires OSM data file
-rake osm_data_creation:create_waypoints           #requires OSM data file
+rake osm_data_creation:create_waypoints           #5000 seconds, requires OSM data file
 
 rake osm_data_clean:remove_non_waypoint_nodes
 rake osm_data_clean:remove_waypoints_outside_sf
