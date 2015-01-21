@@ -30,7 +30,7 @@ namespace :seed do
     all_responses.each do |crime|
       if !IGRNORED_CATEGORIES.include?(crime['category'])
         crime.delete('location')
-        crime["date"] = Time.at(crime["date"])
+        crime["date"] = Time.new(crime["date"])
         Crime.create!(crime.to_hash)
       end
     end
