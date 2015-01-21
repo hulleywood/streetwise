@@ -50,20 +50,20 @@ rake db:migrate
 Seed the database (note: these tasks take a very long time to run, like hours and hours):
 
 ```
-rake seed:latest_crimes                           #requires API key for SFGov Data
+rake seed:latest_crimes                           #700    seconds, requires API key for SFGov Data
 
-rake osm_data_creation:create_waypoints           #requires OSM data file
-rake osm_data_creation:create_sf_nodes            #requires OSM data file
+rake osm_data_creation:create_sf_nodes            #1200   seconds, requires OSM data file
+rake osm_data_creation:create_waypoints           #5000   seconds, requires OSM data file
 
-rake osm_data_clean:remove_non_waypoint_nodes
-rake osm_data_clean:remove_waypoints_outside_sf
-rake osm_data_clean:find_intersection_nodes
-rake osm_data_clean:calculate_node_crime_rating
+rake osm_data_clean:remove_non_waypoint_nodes     #11900  seconds
+rake osm_data_clean:remove_waypoints_outside_sf   #2820   seconds
+rake osm_data_clean:find_intersection_nodes       #800    seconds
+rake osm_data_clean:calculate_node_crime_rating   #8300   seconds
 
-rake graph_seed:create_graph_nodes                #6700 seconds
-rake graph_seed:create_neighbor_relationships     #13300 seconds
-rake graph_seed:create_node_labels                #2100 seconds
-rake graph_seed:create_intersects_relationships   #6400 seconds
+rake graph_seed:create_graph_nodes                #6700   seconds
+rake graph_seed:create_neighbor_relationships     #13300  seconds
+rake graph_seed:create_node_labels                #2100   seconds
+rake graph_seed:create_intersects_relationships   #6400   seconds
 ```
 
 
