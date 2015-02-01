@@ -7,7 +7,6 @@ require "action_controller/railtie"
 require "action_mailer/railtie"
 require "action_view/railtie"
 require "sprockets/railtie"
-# require 'dotenv'
 require 'polylines'
 require 'nokogiri'
 require 'database_cleaner'
@@ -21,6 +20,7 @@ module Streetwise
   class Application < Rails::Application
 
     DatabaseCleaner.strategy = :truncation, {:only => %w[waypoints]}
+    ENV.update YAML.load_file('config/application.yml')[Rails.env] rescue {}
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers

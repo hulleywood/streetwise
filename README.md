@@ -60,7 +60,8 @@ rake osm_data_clean:remove_waypoints_outside_sf   #2820   seconds
 rake osm_data_clean:find_intersection_nodes       #800    seconds
 rake osm_data_clean:calculate_node_crime_rating   #8300   seconds
 
-rake node_data:add_elevation_to_nodes             #480    seconds
+rake node_data:add_elevation_to_nodes             #1400   seconds
+rake node_data:create_neighbor_relationships      #       seconds
 
 rake graph_seed:create_graph_nodes                #6700   seconds
 rake graph_seed:create_neighbor_relationships     #13300  seconds

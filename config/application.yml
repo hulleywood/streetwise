@@ -1,0 +1,13 @@
+defaults: &defaults
+  distance_coefficient: 1
+  crime_rating_coefficient: 1
+  gradient_coefficient: 1
+
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+production:
+  <<: *defaults

@@ -35,7 +35,7 @@ class CreateRelationships < ActiveRecord::Migration
       t.decimal :w_d8g1_o
       t.decimal :w_c1g1_o
       t.decimal :w_c2g1_o
-      t.decmial :w_c4g1_o
+      t.decimal :w_c4g1_o
       t.decimal :w_c8g1_o
       t.decimal :w_c1g2_o
       t.decimal :w_c1g4_o
@@ -55,7 +55,7 @@ class CreateRelationships < ActiveRecord::Migration
       t.decimal :w_d8g1_i
       t.decimal :w_c1g1_i
       t.decimal :w_c2g1_i
-      t.decmial :w_c4g1_i
+      t.decimal :w_c4g1_i
       t.decimal :w_c8g1_i
       t.decimal :w_c1g2_i
       t.decimal :w_c1g4_i

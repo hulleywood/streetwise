@@ -21,7 +21,7 @@ namespace :node_data do
     tstart = Time.now
     base_uri = "https://maps.googleapis.com/maps/api/elevation/json?locations="
 
-    Node.where(elevation: nil).find_in_batches(batch_size: 75) do |group|
+    Node.find_in_batches(batch_size: 75) do |group|
       request = base_uri
       group.each_with_index do |n, i|
         i == 0 ? (request += "#{n.lat},#{n.lon}") : (request += "|#{n.lat},#{n.lon}")
@@ -34,7 +34,7 @@ namespace :node_data do
       if parsed["results"] && parsed["results"].length > 0
         group.each_with_index do |n, i|
           elevation = parsed["results"][i]["elevation"].to_f
-          n.elevation = meters_to_miles(elevation) if elevation
+          n.elevation = meters_to_feet(elevation) if elevation
           n.save
         end
       end
@@ -55,6 +55,38 @@ namespace :node_data do
         n.save
       end
     end
+  end
+
+  desc 'Calculate attribute coefficients'
+  task calc_coefficients: :environment do
+    tstart = Time.now
+
+    qty_rels = Relationship.count
+
+    total_distance = Relationship.sum(:distance)
+    max_distance = Relationship.maximum(:distance)
+    min_distance = Relationship.minimum(:distance)
+    avg_distance = total_distance/qty_rels
+    coeff_distance = 1/max_distance 
+
+    total_crime_rating = Relationship.sum(:crime_rating)
+    max_crime = Relationship.maximum(:crime_rating)
+    min_crime = Relationship.minimum(:crime_rating)
+    avg_crime = total_crime_rating/qty_rels
+    coeff_crime = 1/max_crime
+
+    total_gradient = Relationship.sum(:gradient)
+    max_gradient = Relationship.maximum(:gradient)
+    min_gradient = Relationship.minimum(:gradient)
+    avg_gradient = total_gradient/qty_rels
+    coeff_gradient = 1/max_gradient
+
+    puts "Distance: avg = #{avg_distance}, max = #{max_distance}, min = #{min_distance}, coefficient = #{coeff_distance}"
+    puts "Crime Rating: avg = #{avg_crime}, max = #{max_crime}, min = #{min_crime}, coefficient = #{coeff_crime}"
+    puts "Gradient: avg = #{avg_gradient}, max = #{max_gradient}, min = #{min_gradient}, coefficient = #{coeff_gradient}"
+
+    tend = Time.now
+    puts "Total time to complete: #{tend - tstart} seconds"
   end
 end
 

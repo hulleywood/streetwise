@@ -32,12 +32,13 @@ class Relationship < ActiveRecord::Base
       rel.populate_distance
       rel.populate_crime_rating
       rel.populate_gradient
-      rel.set_relationship_weights
-
-      @neo.set_relationship_properties(rel, {"distance" => distance, "crime_rating" => crime_rating})
-      updated_rel = @neo.get_relationship(rel)
-      Graph.update_relationship_weights(updated_rel)
     end
+  end
+
+  def normalize_relationship_properties
+    self.normalize_distance
+    self.normalize_crime_rating
+    self.normalize_gradient
   end
 
   def self.relationship_exists(n1, n2)
@@ -48,16 +49,25 @@ class Relationship < ActiveRecord::Base
 
   def populate_distance
     self.distance = calc_node_distance
+  end
+
+  def normalize_distance
     self.n_distance = ENV['distance_coefficient'] * self.distance
   end
 
   def populate_crime_rating
     self.crime_rating = calc_crime_rating
+  end
+
+  def normalize_crime_rating
     self.n_crime_rating = ENV['crime_rating_coefficient'] * self.crime_rating
   end
 
   def populate_gradient
     self.gradient = calc_node_gradient
+  end
+
+  def normalize_gradient
     self.n_grad_out = ( ENV['gradient_coefficient'] * self.gradient ).abs
     self.n_grad_in = self.n_grad_out
     self.nw_grad_out = self.gradient < 0 ? (self.n_grad_out * 0.5) : self.n_grad_out
@@ -113,6 +123,7 @@ class Relationship < ActiveRecord::Base
         'nw_grad_out'
       else
         'nw_grad_in'
+      end
     end
   end
 end
