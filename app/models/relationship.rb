@@ -47,21 +47,27 @@ class Relationship < ActiveRecord::Base
   end
 
   def populate_distance
-    rel.distance = calc_node_distance
-    rel.normalized_distance = ENV['distance_coefficient'] * rel.distance
+    self.distance = calc_node_distance
+    self.n_distance = ENV['distance_coefficient'] * self.distance
   end
 
   def populate_crime_rating
-    rel.crime_rating = calc_crime_rating
-    rel.normalized_crime_rating = ENV['crime_rating_coefficient'] * rel.crime_rating
+    self.crime_rating = calc_crime_rating
+    self.n_crime_rating = ENV['crime_rating_coefficient'] * self.crime_rating
   end
 
   def populate_gradient
-    rel.gradient = calc_node_gradient
-    rel.normalized_gradient = ENV['gradient_coefficient'] * rel.gradient
+    self.gradient = calc_node_gradient
+    self.n_grad_out = ( ENV['gradient_coefficient'] * self.gradient ).abs
+    self.n_grad_in = self.n_grad_out
+    self.nw_grad_out = self.gradient < 0 ? (self.n_grad_out * 0.5) : self.n_grad_out
+    self.nw_grad_in = self.gradient < 0 ? self.n_grad_out : (self.n_grad_out * 0.5)
   end
 
   def set_relationship_wieghts
+    self.weight_attributes.each do |attr|
+      self.send("#{attr}=".to_sym, self.calc_weight_from_attribute_name(attr))
+    end
   end
 
   def calc_node_distance
@@ -72,5 +78,41 @@ class Relationship < ActiveRecord::Base
 
   def calc_crime_rating
     (node1.crime_rating + node2.crime_rating)/2
+  end
+
+  def calc_node_gradient
+    rise = self.start_node.elevation - self.end_node.elevation
+    run = self.distance
+    slope = rise/run
+    gradient = (slope**2)*run
+  end
+
+  def calc_weight_from_attribute_name(attr)
+    attr1 = self.attr_from_char(/^w_(.{1})/.match(attr), /^w_.{5}(.{1})/.match(attr))
+    attr1_weight = /^w_.{1}(.{1})/.match(attr)
+    attr2 = self.attr_from_char(/^w_.{2}(.{1})/.match(attr), /^w_.{5}(.{1})/.match(attr))
+    attr2_weight = /^w_.{3}(.{1})/.match(attr)
+
+    weight = self.send(attr1.to_sym) * attr1_weight + self.send(attr2.to_sym) * attr2_weight
+    weight/(attr1_weight + attr2_weight)
+  end
+
+  def weight_attributes
+    attributes = self.attributes.keys
+    attribures.select {|attr| !!(attr =~ /^w_.*/)}
+  end
+
+  def attr_from_char(char, direction)
+    case char
+    when 'c'
+      'n_crime_rating'
+    when 'd'
+      'n_dist'
+    when 'g'
+      if direction == 'o'
+        'nw_grad_out'
+      else
+        'nw_grad_in'
+    end
   end
 end

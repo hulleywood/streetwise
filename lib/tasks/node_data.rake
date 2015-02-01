@@ -21,7 +21,7 @@ namespace :node_data do
     tstart = Time.now
     base_uri = "https://maps.googleapis.com/maps/api/elevation/json?locations="
 
-    Node.where(intersection: true, elevation: nil).find_in_batches(batch_size: 75) do |group|
+    Node.where(elevation: nil).find_in_batches(batch_size: 75) do |group|
       request = base_uri
       group.each_with_index do |n, i|
         i == 0 ? (request += "#{n.lat},#{n.lon}") : (request += "|#{n.lat},#{n.lon}")
@@ -54,20 +54,6 @@ namespace :node_data do
         n.elevation = meters_to_feet(n.elevation)
         n.save
       end
-    end
-  end
-
-  desc 'Add gradient to relationships'
-  task gradient_to_rels: :environment do
-    rels = Relationship.all
-
-    rels.each do |r|
-      rise = (r.start_node.elevation - r.end_node.elevation).abs
-      run = r.distance
-      slope = rise/run
-      grad = (slope**2)*run
-      r.gradient = grad
-      r.save
     end
   end
 end
