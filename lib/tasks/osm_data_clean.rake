@@ -118,7 +118,6 @@ namespace :osm_data_clean do
       thr = Thread.new(batch_of_nodes) do |nodes|
         nodes.each do |node|
           crimes = Crime.count_near_crimes(node)
-          p crimes
           node.update_attribute( :crime_rating, crimes )
         end
         puts "Node group finished"
