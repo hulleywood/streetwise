@@ -45,7 +45,7 @@ class Node < ActiveRecord::Base
     if coord > 0
       (coord - distance).to_s..(coord + distance).to_s
     else
-      (coord - distance).to_s..(coord + distance).to_s
+      (coord + distance).to_s..(coord - distance).to_s
     end
   end
 

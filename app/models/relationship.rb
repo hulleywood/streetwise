@@ -26,12 +26,13 @@ class Relationship < ActiveRecord::Base
   end
 
   def self.make_neighbor_relationship(node, neighbor)
-    unless relationship_exists(node, neighbor, 'neighbors')
+    unless relationship_exists(node, neighbor)
       rel = self.new(start_node: node, end_node: neighbor)
       rel.intersectional = node.intersection? && neighbor.intersection?
       rel.populate_distance
       rel.populate_crime_rating
       rel.populate_gradient
+      rel.save
     end
   end
 
@@ -42,9 +43,9 @@ class Relationship < ActiveRecord::Base
   end
 
   def self.relationship_exists(n1, n2)
-    rel = Relationship.find(start_node: n1, end_node: n2)
-    rel ||= Relationship.find(start_node: n2, end_node: n1)
-    !!rel
+    rel = Relationship.where(start_node: n1, end_node: n2).limit(1)
+    rel = Relationship.where(start_node: n2, end_node: n1).limit(1) if rel.empty?
+    rel.present?
   end
 
   def populate_distance
@@ -87,7 +88,7 @@ class Relationship < ActiveRecord::Base
   end
 
   def calc_crime_rating
-    (node1.crime_rating + node2.crime_rating)/2
+    (self.start_node.crime_rating + self.end_node.crime_rating)/2
   end
 
   def calc_node_gradient

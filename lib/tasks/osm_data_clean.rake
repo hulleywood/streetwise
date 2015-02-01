@@ -117,8 +117,9 @@ namespace :osm_data_clean do
     Node.find_in_batches(batch_size: batch_size) do |batch_of_nodes|
       thr = Thread.new(batch_of_nodes) do |nodes|
         nodes.each do |node|
-          crimes = Crime.get_near_crimes(node)
-          node.update_attribute( :crime_rating, crimes.length )
+          crimes = Crime.count_near_crimes(node)
+          p crimes
+          node.update_attribute( :crime_rating, crimes )
         end
         puts "Node group finished"
       end
@@ -135,5 +136,6 @@ namespace :osm_data_clean do
     puts "Crimes: #{Crime.count}"
     puts "Nodes: #{Node.count}"
     puts "Waypoints: #{Waypoint.count}"
+    puts "Relationships: #{Relationship.count}"
   end
 end
