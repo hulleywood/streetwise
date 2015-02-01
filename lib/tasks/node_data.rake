@@ -1,4 +1,20 @@
 namespace :node_data do
+  desc 'Create neighbor relationships'
+  task create_neighbor_relationships: :environment do
+    tstart = Time.now
+
+    nodes = Node.all
+    puts "Creating relationships for #{nodes.length} nodes"
+
+    nodes.each do |node|
+      wpts = node.waypoints
+      wpts.each { |wpt| Relationship.create_neighbors(node, wpt) }
+    end
+
+    tend = Time.now
+    puts "Time to complete: #{tend - tstart} seconds"
+  end
+
 
   desc 'Add elevation to nodes'
   task add_elevation_to_nodes: :environment do
