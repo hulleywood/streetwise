@@ -62,6 +62,7 @@ rake osm_data_clean:calculate_node_crime_rating   #7800   seconds
 
 rake node_data:add_elevation_to_nodes             #1400   seconds
 rake node_data:create_neighbor_relationships      #6250   seconds
+rake node_data:weight_relationships               #2150   seconds
 
 rake graph_seed:create_graph_nodes                #6700   seconds
 rake graph_seed:create_neighbor_relationships     #13300  seconds
@@ -82,3 +83,4 @@ rake graph_seed:create_intersects_relationships   #6400   seconds
 * Allow intersection searching, not just places
 * Recenter map on User's location if in SF
 * Add "my location" to autcomplete search
+* Add elevation profile optimization

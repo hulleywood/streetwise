@@ -53,7 +53,7 @@ class Relationship < ActiveRecord::Base
   end
 
   def normalize_distance
-    self.n_distance = ENV['distance_coefficient'] * self.distance
+    self.n_dist = 0.51080610 * self.distance
   end
 
   def populate_crime_rating
@@ -61,7 +61,7 @@ class Relationship < ActiveRecord::Base
   end
 
   def normalize_crime_rating
-    self.n_crime_rating = ENV['crime_rating_coefficient'] * self.crime_rating
+    self.n_crime_rating = 0.00025608 * self.crime_rating
   end
 
   def populate_gradient
@@ -69,13 +69,13 @@ class Relationship < ActiveRecord::Base
   end
 
   def normalize_gradient
-    self.n_grad_out = ( ENV['gradient_coefficient'] * self.gradient ).abs
+    self.n_grad_out = ( 0.00000225 * self.gradient ).abs
     self.n_grad_in = self.n_grad_out
     self.nw_grad_out = self.gradient < 0 ? (self.n_grad_out * 0.5) : self.n_grad_out
     self.nw_grad_in = self.gradient < 0 ? self.n_grad_out : (self.n_grad_out * 0.5)
   end
 
-  def set_relationship_wieghts
+  def set_relationship_weights
     self.weight_attributes.each do |attr|
       self.send("#{attr}=".to_sym, self.calc_weight_from_attribute_name(attr))
     end
@@ -100,9 +100,9 @@ class Relationship < ActiveRecord::Base
 
   def calc_weight_from_attribute_name(attr)
     attr1 = self.attr_from_char(/^w_(.{1})/.match(attr), /^w_.{5}(.{1})/.match(attr))
-    attr1_weight = /^w_.{1}(.{1})/.match(attr)
+    attr1_weight = /^w_.{1}(.{1})/.match(attr)[1].to_i
     attr2 = self.attr_from_char(/^w_.{2}(.{1})/.match(attr), /^w_.{5}(.{1})/.match(attr))
-    attr2_weight = /^w_.{3}(.{1})/.match(attr)
+    attr2_weight = /^w_.{3}(.{1})/.match(attr)[1].to_i
 
     weight = self.send(attr1.to_sym) * attr1_weight + self.send(attr2.to_sym) * attr2_weight
     weight/(attr1_weight + attr2_weight)
@@ -110,17 +110,17 @@ class Relationship < ActiveRecord::Base
 
   def weight_attributes
     attributes = self.attributes.keys
-    attribures.select {|attr| !!(attr =~ /^w_.*/)}
+    attributes.select {|attr| !!(attr =~ /^w_.*/)}
   end
 
   def attr_from_char(char, direction)
-    case char
+    case char[1]
     when 'c'
       'n_crime_rating'
     when 'd'
       'n_dist'
     when 'g'
-      if direction == 'o'
+      if direction[1] == 'o'
         'nw_grad_out'
       else
         'nw_grad_in'

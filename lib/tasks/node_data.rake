@@ -15,6 +15,31 @@ namespace :node_data do
     puts "Time to complete: #{tend - tstart} seconds"
   end
 
+  desc 'Weight relationships'
+  task weight_relationships: :environment do
+    tstart = Time.now
+
+    batch_of_threads = []
+    pool_size = 10
+    batch_size = Relationship.count/pool_size
+    puts "Weighting #{pool_size} batches of #{batch_size} relationships"
+
+    Relationship.find_in_batches(batch_size: batch_size) do |batch|
+      thr = Thread.new(batch) do |rels|
+        rels.each do |rel|
+          rel.normalize_relationship_properties
+          rel.set_relationship_weights
+          rel.save
+        end
+        puts "Relationship group finished"
+      end
+      batch_of_threads << thr
+    end
+
+    batch_of_threads.map(&:join)
+    tend = Time.now
+    puts "Time to complete: #{tend - tstart} seconds"
+  end
 
   desc 'Add elevation to nodes'
   task add_elevation_to_nodes: :environment do
