@@ -1,7 +1,7 @@
 defaults: &defaults
-  distance_coefficient: 1
-  crime_rating_coefficient: 1
-  gradient_coefficient: 1
+  distance_coefficient:  0.51080610
+  crime_rating_coefficient: 0.00025608
+  gradient_coefficient: 0.00000225
 
 development:
   <<: *defaults
