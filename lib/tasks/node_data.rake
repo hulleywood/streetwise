@@ -1,4 +1,20 @@
 namespace :node_data do
+  desc 'Create intersectional relationships'
+  task create_intersectional_relationships: :environment do
+    tstart = Time.now
+
+    nodes = Node.intersections
+    puts "Creating relationships for #{nodes.length} nodes"
+
+    nodes.each do |node|
+      wpts = node.waypoints
+      wpts.each { |wpt| Relationship.create_neighbors(node, wpt) }
+    end
+
+    tend = Time.now
+    puts "Time to complete: #{tend - tstart} seconds"
+  end
+
   desc 'Create neighbor relationships'
   task create_neighbor_relationships: :environment do
     tstart = Time.now
@@ -130,6 +146,45 @@ namespace :node_data do
       qty = Relationship.where(gradient: range).size
       puts "#{qty} relationships between #{i * step_size} and #{(i+1) * step_size}"
     end
+  end
+
+  desc 'Clear relationship weights'
+  task clear_relationship_weights: :environment do
+    tstart = Time.now
+
+    graph_rels = Graph.all_relationships
+    puts "Clearing weights for #{graph_rels.length} relationships"
+
+    graph_rels.each do |rel|
+      Graph.clear_relationship_weights(rel)
+    end
+
+    tend = Time.now
+    puts "Time to complete: #{tend - tstart} seconds"
+  end
+
+  desc "Create intersection relationships"
+  task create_intersects_relationships: :environment do
+    tstart = Time.now
+    ints = Graph.all
+    new_rels = 0
+    properties = Relationship.column_names.select {|col| !!(col =~ /^w_/)}
+
+    ints.each do |int|
+      int_paths = Graph.traverse_next_ints(int)
+      int_paths.each do |path|
+        values = {}
+        properties.each do |prop|
+          values[prop] = Graph.sum_property(path, prop)
+        end
+        Graph.create_intersection_relationship(int, path["end"], values)
+        new_rels += 1
+        puts "Relationship added, total: #{new_rels}"
+      end
+    end
+
+    tend = Time.now
+    puts "Time to complete: #{tend - tstart} seconds"
   end
 end
 

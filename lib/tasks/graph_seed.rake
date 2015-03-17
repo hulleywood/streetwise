@@ -6,7 +6,7 @@ namespace :graph_seed do
   task create_graph_nodes_from_pg: :environment do
     tstart = Time.now
 
-    Node.where(intersection: true).each do |ar_node|
+    Node.all.each do |ar_node|
       graph_node = Graph.create_node(ar_node.attributes)
       Graph.create_node_indices(graph_node)
     end

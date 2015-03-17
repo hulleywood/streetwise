@@ -29,6 +29,20 @@ class Graph
     @neo.delete_relationship(relationship)
   end
 
+  def self.traverse_next_ints(int)
+    int_paths = @neo.traverse(int, "paths",
+                              {"order" => "depth first",
+                                "uniqueness" => "node global",
+                                "relationships" => [{"type"=> "neighbors", "direction" => "all"}],
+                                "prune evaluator" => {"language" => "javascript",
+                                  "body" => "(position.endNode().getProperty('intersection') == true) && (position.length() > 0)"}
+    })
+
+    int_paths.reject do |path|
+      @neo.get_node(path["end"])["data"]["intersection"] == false
+    end
+  end
+
   def self.get_paths(ar_node1, ar_node2)
     tstart = Time.now
     node1 = self.find_by_osm_id(ar_node1.osm_node_id)
@@ -38,7 +52,7 @@ class Graph
     paths = {}
     threads = []
     weights = [ "weight_safest_12", "weight_safest_14",
-                "weight_safest_18", "weight_shortest" ]
+      "weight_safest_18", "weight_shortest" ]
 
     puts "#{Time.now - tstart} seconds: starting path generation..."
     weights.each do |weight|
@@ -97,8 +111,8 @@ class Graph
   def self.get_weighted_path(node1, node2, weight, max_depth, rel = "neighbors")
     relationships = {"type" => rel, "direction" => "out"}
     path = @neo.get_shortest_weighted_path(node1, node2, relationships,
-                                weight_attr=weight, depth=max_depth,
-                                algorithm='dijkstra').first
+                                           weight_attr=weight, depth=max_depth,
+                                           algorithm='dijkstra').first
 
     puts "#{Time.now} Path found, returning points..."
     points = self.return_path_points(path)
