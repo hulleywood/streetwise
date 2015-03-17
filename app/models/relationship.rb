@@ -53,7 +53,7 @@ class Relationship < ActiveRecord::Base
   end
 
   def normalize_distance
-    self.n_dist = 0.51080610 * self.distance
+    self.n_dist = 108.69565217391305 * self.distance
   end
 
   def populate_crime_rating
@@ -61,7 +61,7 @@ class Relationship < ActiveRecord::Base
   end
 
   def normalize_crime_rating
-    self.n_crime_rating = 0.00025608 * self.crime_rating
+    self.n_crime_rating = 0.028985507246376812 * self.crime_rating
   end
 
   def populate_gradient
@@ -69,7 +69,7 @@ class Relationship < ActiveRecord::Base
   end
 
   def normalize_gradient
-    self.n_grad_out = ( 0.00000225 * self.gradient ).abs
+    self.n_grad_out = ( 0.003244958565316875 * self.gradient ).abs
     self.n_grad_in = self.n_grad_out
     self.nw_grad_out = self.gradient < 0 ? (self.n_grad_out * 0.5) : self.n_grad_out
     self.nw_grad_in = self.gradient < 0 ? self.n_grad_out : (self.n_grad_out * 0.5)

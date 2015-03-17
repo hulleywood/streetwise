@@ -20,3 +20,6 @@ database.yml
 
 # Ignore open street map data files (really big)
 /lib/tasks/*.osm
+
+# Neo4j stuff
+/neo4j

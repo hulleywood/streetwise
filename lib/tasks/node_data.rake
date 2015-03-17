@@ -92,26 +92,44 @@ namespace :node_data do
     max_distance = Relationship.maximum(:distance)
     min_distance = Relationship.minimum(:distance)
     avg_distance = total_distance/qty_rels
-    coeff_distance = 1/max_distance 
+    median_distance = Relationship.order(distance: :desc)[qty_rels/2.round].distance.to_f
+    coeff_distance = 1/median_distance 
 
     total_crime_rating = Relationship.sum(:crime_rating)
     max_crime = Relationship.maximum(:crime_rating)
     min_crime = Relationship.minimum(:crime_rating)
     avg_crime = total_crime_rating/qty_rels
-    coeff_crime = 1/max_crime
+    median_crime = Relationship.order(crime_rating: :desc)[qty_rels/2.round].crime_rating.to_f
+    coeff_crime = 1/median_crime
 
     total_gradient = Relationship.sum(:gradient)
     max_gradient = Relationship.maximum(:gradient)
     min_gradient = Relationship.minimum(:gradient)
     avg_gradient = total_gradient/qty_rels
-    coeff_gradient = 1/max_gradient
+    median_gradient = Relationship.order(gradient: :desc)[qty_rels/2.round].gradient.to_f
+    coeff_gradient = 1/median_gradient
 
-    puts "Distance: avg = #{avg_distance}, max = #{max_distance}, min = #{min_distance}, coefficient = #{coeff_distance}"
-    puts "Crime Rating: avg = #{avg_crime}, max = #{max_crime}, min = #{min_crime}, coefficient = #{coeff_crime}"
-    puts "Gradient: avg = #{avg_gradient}, max = #{max_gradient}, min = #{min_gradient}, coefficient = #{coeff_gradient}"
+    puts "Distance: avg = #{avg_distance}, max = #{max_distance}, min = #{min_distance}, coefficient = #{coeff_distance}, median = #{median_distance}"
+    puts "Crime Rating: avg = #{avg_crime}, max = #{max_crime}, min = #{min_crime}, coefficient = #{coeff_crime}, median = #{median_crime}"
+    puts "Gradient: avg = #{avg_gradient}, max = #{max_gradient}, min = #{min_gradient}, coefficient = #{coeff_gradient}, median = #{median_gradient}"
 
     tend = Time.now
     puts "Total time to complete: #{tend - tstart} seconds"
+  end
+
+  desc 'Show gradient distribution'
+  task calc_distribution: :environment do
+    max = Relationship.maximum(:gradient)
+    min = Relationship.minimum(:gradient)
+    total_range = max - min
+    steps = 40
+    step_size = total_range/40
+
+    steps.times do |i|
+      range = "#{i * step_size}".."#{(i+1) * step_size}"
+      qty = Relationship.where(gradient: range).size
+      puts "#{qty} relationships between #{i * step_size} and #{(i+1) * step_size}"
+    end
   end
 end
 

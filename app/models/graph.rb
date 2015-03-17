@@ -65,11 +65,11 @@ class Graph
   end
 
   def self.create_node_indices(n)
-    @neo.add_to_index("intersection_index", "intersection", n["data"]["intersection"], n)
-    @neo.add_to_index("osm_node_id_index", "osm_node_id", n["data"]["osm_node_id"], n)
+    @neo.add_to_index("ar_id_index", "r_id", n["data"]["id"], n)
     @neo.add_to_index("lat_index", "lat", n["data"]["lat"], n)
     @neo.add_to_index("lon_index", "lon", n["data"]["lon"], n)
     @neo.add_to_index("crime_rating_index", "crime_rating", n["data"]["crime_rating"], n)
+    @neo.add_to_index("elevation_index", "elevation", n["data"]["elevation"], n)
   end
 
   def self.all_relationships
