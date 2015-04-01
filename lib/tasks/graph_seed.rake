@@ -15,6 +15,99 @@ namespace :graph_seed do
     puts "Time to complete: #{tend - tstart} seconds"
   end
 
+  desc 'Create neo rels from pg'
+  task create_graph_relationships: :environment do
+    tstart = Time.now
+
+    rels = Relationship.all
+    puts "Creating graph relationships for #{rels.length} relationships"
+
+    rels.each do |rel|
+      starting_graph_node = Graph.find_by_ar_id(rel.start_node_id)
+      ending_graph_node = Graph.find_by_ar_id(rel.end_node_id)
+      graph_rel = @neo.create_relationship('neighbors', starting_graph_node, ending_graph_node)
+      properties = rel.weight_properties
+      @neo.set_relationship_properties(graph_rel, properties)
+    end
+
+    tend = Time.now
+    puts "Time to complete: #{tend - tstart} seconds"
+  end
+
+  desc 'Create neighbor relationships'
+  task create_neighbor_relationships: :environment do
+    tstart = Time.now
+
+    graph_nodes = Graph.all
+    puts "Creating relationships for #{graph_nodes.length} nodes"
+
+    graph_nodes.each do |graph_node|
+      ar_node = Node.find_by_osm_node_id(graph_node["data"]["osm_node_id"])
+      wpts = ar_node.waypoints
+      wpts.each { |wpt| Graph.create_neighbor_relationships(graph_node, ar_node, wpt) }
+    end
+
+    tend = Time.now
+    puts "Time to complete: #{tend - tstart} seconds"
+  end
+
+  desc 'Update neighbor weighting'
+  task update_neighbor_weighting: :environment do
+    tstart = Time.now
+
+    graph_rels = Graph.all_relationships
+    puts "Updating weights for #{graph_rels.length} relationships"
+
+    graph_rels.each do |rel|
+      Graph.update_relationship_weights(rel)
+    end
+
+    tend = Time.now
+    puts "Time to complete: #{tend - tstart} seconds"
+  end
+
+  desc 'Clear relationship weights'
+  task clear_relationship_weights: :environment do
+    tstart = Time.now
+
+    graph_rels = Graph.all_relationships
+    puts "Clearing weights for #{graph_rels.length} relationships"
+
+    graph_rels.each do |rel|
+      Graph.clear_relationship_weights(rel)
+    end
+
+    tend = Time.now
+    puts "Time to complete: #{tend - tstart} seconds"
+  end
+
+  desc "Create intersection relationships"
+  task create_intersects_relationships: :environment do
+    tstart = Time.now
+    ints = Graph.intersections
+    new_rels = 0
+
+    properties = [  "weight_safest_12", "weight_safest_14",
+      "weight_safest_18", "weight_shortest",
+      "distance", "crime_rating" ]
+
+    ints.each do |int|
+      int_paths = Graph.traverse_next_ints(int)
+      int_paths.each do |path|
+        values = {}
+        properties.each do |prop|
+          values[prop] = Graph.sum_property(path, prop)
+        end
+        Graph.create_intersection_relationship(int, path["end"], values)
+        new_rels += 1
+        puts "Relationship added, total: #{new_rels}"
+      end
+    end
+
+    tend = Time.now
+    puts "Time to complete: #{tend - tstart} seconds"
+  end
+
   desc "Add node labels to graph DB"
   task create_node_labels: :environment do
     tstart = Time.now

@@ -76,7 +76,7 @@ class Relationship < ActiveRecord::Base
   end
 
   def set_relationship_weights
-    self.weight_attributes.each do |attr|
+    self.weight_keys.each do |attr|
       self.send("#{attr}=".to_sym, self.calc_weight_from_attribute_name(attr))
     end
   end
@@ -108,7 +108,7 @@ class Relationship < ActiveRecord::Base
     weight/(attr1_weight + attr2_weight)
   end
 
-  def weight_attributes
+  def weight_keys
     attributes = self.attributes.keys
     attributes.select {|attr| !!(attr =~ /^w_.*/)}
   end
@@ -126,5 +126,10 @@ class Relationship < ActiveRecord::Base
         'nw_grad_in'
       end
     end
+  end
+
+  def weight_properties
+    attributes = self.attributes
+    attributes.select {|attr, value| !!(attr =~ /^w_.*/)}
   end
 end

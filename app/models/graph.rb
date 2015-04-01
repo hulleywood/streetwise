@@ -29,6 +29,30 @@ class Graph
     @neo.delete_relationship(relationship)
   end
 
+  def self.create_neighbor_relationships(graph_node, ar_node, wpt)
+    make_neighbor_relationship(graph_node, ar_node, wpt.previous_node) if wpt.previous_node
+    make_neighbor_relationship(graph_node, ar_node, wpt.next_node) if wpt.next_node
+  end
+
+  def self.make_neighbor_relationship(graph_node, ar_node, neighbor_ar)
+    neighbor_node = Graph.find_by_ar_id(neighbor_ar.id)
+    rel = @neo.create_relationship("neighbors", graph_node, neighbor_node)
+    properties = Graph.calculate_properties
+    @neo.set_relationship_properties(rel, properties)
+  end
+
+  def self.get_node_id(node)
+    node["self"].split('/').last
+  end
+
+  def self.find_by_osm_id(osm_id)
+    @neo.get_node_index("osm_node_id_index", "osm_node_id", osm_id).first
+  end
+
+  def self.find_by_ar_id(ar_id)
+    @neo.get_node_index("ar_node_id_index", "ar_node_id", ar_id).first
+  end
+
   def self.traverse_next_ints(int)
     int_paths = @neo.traverse(int, "paths",
                               {"order" => "depth first",
