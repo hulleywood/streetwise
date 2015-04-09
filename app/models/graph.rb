@@ -50,7 +50,7 @@ class Graph
   end
 
   def self.find_by_ar_id(ar_id)
-    @neo.get_node_index("ar_node_id_index", "ar_node_id", ar_id).first
+    @neo.get_node_index("ar_id_index", "ar_id", ar_id)
   end
 
   def self.traverse_next_ints(int)
